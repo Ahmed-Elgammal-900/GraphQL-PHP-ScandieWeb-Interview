@@ -8,7 +8,7 @@ use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Schema;
 use GraphQL\GraphQL;
 
-include '../Server.php';
+include './Server.php';
 
 $categoryType = new ObjectType([
     'name' => 'Category',
