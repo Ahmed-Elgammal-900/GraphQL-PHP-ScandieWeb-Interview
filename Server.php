@@ -1,10 +1,16 @@
 <?php
 
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Headers: Content-Type");
+
 class Config {
-    const DB_HOST = 'localhost';
-    const DB_NAME = 'ecommerce';
-    const DB_USER = 'root';
-    const DB_PASS = '';
+    const DB_HOST = 'ecommerce-scandiweb-ecommerce-database.c.aivencloud.com';
+    const DB_NAME = 'defaultdb';
+    const DB_USER = 'avnadmin';
+    const DB_PASS = 'AVNS_n3L7nRXXuFKhnaQ1Qk4';
+    const DB_PORT = 28703;
+    const ssl_CA = './ca.pem';
 }
 
 class Database {
@@ -12,10 +18,27 @@ class Database {
     private $connection;
 
     private function __construct() {
-        $this->connection = new mysqli(Config::DB_HOST, Config::DB_USER, Config::DB_PASS, Config::DB_NAME);
+        $this->connection = new mysqli(Config::DB_HOST, Config::DB_USER, Config::DB_PASS, Config::DB_NAME, Config::DB_PORT);
+        $this->connection->ssl_set(null, null, Config::ssl_CA, null, null);
+        $this->connection->options(MYSQLI_OPT_SSL_VERIFY_SERVER_CERT, true);
+        $this->connection->options(MYSQLI_OPT_CONNECT_TIMEOUT, 1000);
+
+        if (!$this->connection->real_connect(
+            Config::DB_HOST,
+            Config::DB_USER,
+            Config::DB_PASS,
+            Config::DB_NAME,
+            Config::DB_PORT,
+            null,
+            MYSQLI_CLIENT_SSL
+        )) {
+            die("Connection failed with SSL: " . $this->connection->connect_error);
+        }
+
         if ($this->connection->connect_error) {
             die("Connection failed: " . $this->connection->connect_error);
         }
+        
     }
 
     public static function getInstance() {
@@ -30,7 +53,13 @@ class Database {
     }
 
     public function query($sql) {
-        return $this->connection->query($sql);
+        $result = $this->connection->query($sql);
+
+        if (!$result) {
+            die("Query failed. Error ({$this->connection->errno}): {$this->connection->error}");
+        }
+
+        return $result;
     }
 
 }
