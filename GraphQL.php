@@ -160,7 +160,7 @@ $mutationType = new ObjectType([
         'createOrders' =>[
             'type' => Type::string(),
             'args' =>[
-                'items' => Type::listof($inputType),
+                'items' => Type::listof($inputType)
             ],
             'resolve' => function($root, $args){
                 $Orders = new createOrders();
