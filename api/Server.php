@@ -10,7 +10,7 @@ class Config {
     const DB_USER = 'avnadmin';
     const DB_PASS = 'AVNS_n3L7nRXXuFKhnaQ1Qk4';
     const DB_PORT = 28703;
-    const ssl_CA = './ca.pem';
+    const ssl_CA = '../ca.pem';
 }
 
 class Database {
