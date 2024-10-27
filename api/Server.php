@@ -126,7 +126,7 @@ class getCategroy extends CategoryModel{
 class getProduct extends ProductsModel{
     function getAll($type){
         $type = strtolower($type);
-        $sql = "SELECT * FROM products where category ='{$type}' or '{$type}' = 'all' or '{$type}' = '' ORDER BY category";
+        $sql = "SELECT * FROM products where category ='{$type}' or '{$type}' = 'all' ORDER BY category";
         $result = $this->db->query($sql);
         return $result->fetch_all(MYSQLI_ASSOC);
     }
