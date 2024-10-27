@@ -90,7 +90,7 @@ abstract class ProductsModel{
         $this->id = $id;
     }
 
-    abstract function getAll();
+    abstract function getAll($type);
     abstract function getByID();
     abstract function getGallery();
     abstract function getCurrency();
@@ -124,7 +124,7 @@ class getCategroy extends CategoryModel{
 
 
 class getProduct extends ProductsModel{
-    function getAll($type = null){
+    function getAll($type){
         $type = strtolower($type);
         $sql = "SELECT * FROM products where category ='{$type}' or '{$type}' = 'all' or '{$type}' = '' ORDER BY category";
         $result = $this->db->query($sql);
