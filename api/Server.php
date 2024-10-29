@@ -72,9 +72,9 @@ abstract class CategoryModel{
     protected $db;
     protected $type;
 
-    public function __construct($type){
+    public function __construct($type1 = null, $type2 = null){
         $this->db = Database::getInstance();
-        $this->type = $type;
+        $this->type = $type1 ?? $type2;
     }
 
     abstract function getType();
@@ -90,7 +90,7 @@ abstract class ProductsModel{
         $this->id = $id;
     }
 
-    abstract function getAll($type);
+    abstract function getByType($type);
     abstract function getByID();
     abstract function getGallery();
     abstract function getCurrency();
@@ -124,7 +124,7 @@ class getCategroy extends CategoryModel{
 
 
 class getProduct extends ProductsModel{
-    function getAll($type){
+    function getByType($type){
         $type = strtolower($type);
         $sql = "SELECT * FROM products where category ='{$type}' or '{$type}' = 'all' ORDER BY category";
         $result = $this->db->query($sql);
