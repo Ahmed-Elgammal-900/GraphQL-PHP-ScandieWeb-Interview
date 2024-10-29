@@ -103,20 +103,6 @@ $context = new contextData();
 $queryType = new ObjectType([
     'name' => 'query',
     'fields' =>[
-        'categories' =>[
-            'type' => Type::listof($categoryType),
-            'args' => [
-                'name' => [
-                    'type' => Type::string(),
-                    'defaultValue' => null
-                ]
-            ],
-            'resolve' => function($root, $args, $context){
-                $context->type = $args['name'];
-                $category = new getCategroy($args['name']);
-                return $category->getType();
-            }
-        ],
 
         'product' =>[
             'type' => $productType,
@@ -131,9 +117,27 @@ $queryType = new ObjectType([
 
         'products' =>[
             'type' => Type::listof($productType),
+            'args' =>[
+                'category' => Type::string()
+            ],
             'resolve' => function($root, $args, $context){
+                $context->type = $args['category'];
                 $all = new getProduct();
-                return $all->getAll($context->type);
+                return $all->getByType($args['category']);
+            }
+        ],
+
+        'categories' =>[
+            'type' => Type::listof($categoryType),
+            'args' => [
+                'name' => [
+                    'type' => Type::string(),
+                    'defaultValue' => null
+                ]
+            ],
+            'resolve' => function($root, $args, $context){
+                $category = new getCategroy($args['name'], $context->type);
+                return $category->getType();
             }
         ]
     ]
