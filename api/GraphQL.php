@@ -98,11 +98,17 @@ $productType = new ObjectType([
     ]
 ]);
 
-$context = new contextData();
-
 $queryType = new ObjectType([
     'name' => 'query',
     'fields' =>[
+
+        'categories' =>[
+            'type' => Type::listof($categoryType),
+            'resolve' => function($root, $args){
+                $category = new getCategroy();
+                return $category->getType();
+            }
+        ],
 
         'product' =>[
             'type' => $productType,
@@ -118,28 +124,16 @@ $queryType = new ObjectType([
         'products' =>[
             'type' => Type::listof($productType),
             'args' =>[
-                'category' => Type::string()
-            ],
-            'resolve' => function($root, $args, $context){
-                $context->type = $args['category'];
-                $all = new getProduct();
-                return $all->getByType($args['category']);
-            }
-        ],
-
-        'categories' =>[
-            'type' => Type::listof($categoryType),
-            'args' => [
-                'name' => [
+                'category' => [
                     'type' => Type::string(),
                     'defaultValue' => null
                 ]
             ],
-            'resolve' => function($root, $args, $context){
-                $category = new getCategroy($args['name'], $context->type);
-                return $category->getType();
+            'resolve' => function($root, $args){
+                $all = new getProduct();
+                return $all->getByType($args['category']);
             }
-        ]
+        ],
     ]
 ]);
 
@@ -185,7 +179,7 @@ $query = $input['query'];
 $variableValues = isset($input['variables']) ? $input['variables'] : null;
 
 try {
-    $result = GraphQL::executeQuery($schema, $query, null, $context, $variableValues);
+    $result = GraphQL::executeQuery($schema, $query, null, null, $variableValues);
     $output = $result->toArray();
 } catch (\Exception $e) {
     $output = [

@@ -64,17 +64,11 @@ class Database {
 
 }
 
-class contextData{
-    public $type;
-}
-
 abstract class CategoryModel{
     protected $db;
-    protected $type;
 
-    public function __construct($type1 = null, $type2 = null){
+    public function __construct(){
         $this->db = Database::getInstance();
-        $this->type = $type1 ?? $type2;
     }
 
     abstract function getType();
@@ -116,7 +110,7 @@ abstract class AttributesModel{
 
 class getCategroy extends CategoryModel{
     function getType(){
-        $sql = "SELECT * FROM category where name ='{$this->type}' or '{$this->type}' = 'all' or '{$this->type}' = '' ";
+        $sql = "SELECT * FROM category";
         $result = $this->db->query($sql);
         return $result->fetch_all(MYSQLI_ASSOC);
     }
@@ -125,6 +119,9 @@ class getCategroy extends CategoryModel{
 
 class getProduct extends ProductsModel{
     function getByType($type){
+        if(!$type){
+            $type = "all";
+        };
         $type = strtolower($type);
         $sql = "SELECT * FROM products where category ='{$type}' or '{$type}' = 'all' ORDER BY category";
         $result = $this->db->query($sql);
