@@ -6,5 +6,5 @@
   },
   "routes": [{ "src": "/(.*)", "dest": "/api/index.php" }],
 
-  "installCommands": "composer install"
+  "installCommand": "composer install"
 }
