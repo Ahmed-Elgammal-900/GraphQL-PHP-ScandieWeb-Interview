@@ -6,9 +6,6 @@ namespace Api\Utils;
 
 use DI\ContainerBuilder;
 use Psr\Container\ContainerInterface;
-use Psr\Log\LoggerInterface;
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
 use Laminas\Diactoros\ResponseFactory;
 use Psr\Http\Message\ResponseInterface;
 use Api\Types\{
@@ -29,12 +26,6 @@ final class Container
     {
         $containerBuilder = new ContainerBuilder();
         $containerBuilder->addDefinitions([
-            
-            LoggerInterface::class => function () {
-                $logger = new Logger('graphql');
-                $logger->pushHandler(new StreamHandler(__DIR__ . '/../tmp/app.log'));
-                return $logger;
-            },
 
             ResponseInterface::class => function (): ResponseInterface {
                 return (new ResponseFactory())->createResponse();

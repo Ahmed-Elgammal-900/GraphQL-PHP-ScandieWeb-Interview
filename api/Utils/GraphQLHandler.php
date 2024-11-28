@@ -7,7 +7,6 @@ namespace Api\Utils;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\{ResponseInterface, ServerRequestInterface};
 use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Log\LoggerInterface;
 use GraphQL\GraphQL;
 use GraphQL\Type\Schema;
 use Api\Types\{QueryType, MutationType};
@@ -15,15 +14,12 @@ use Api\Types\{QueryType, MutationType};
 class GraphQLHandler implements RequestHandlerInterface
 {
     private Schema $schema;
-    private LoggerInterface $logger;
     private ContainerInterface $container;
 
     public function __construct(
-        ContainerInterface $container,
-        LoggerInterface $logger
+        ContainerInterface $container
     ) {
         $this->container = $container;
-        $this->logger = $logger;
         $this->initializeSchema();
     }
 
@@ -50,10 +46,6 @@ class GraphQLHandler implements RequestHandlerInterface
 
             return $this->createResponse(200, $result);
         } catch (\Throwable $e) {
-            $this->logger->error('GraphQL error: ' . $e->getMessage(), [
-                'exception' => $e,
-            ]);
-
             return $this->createResponse(500, [
                 'errors' => [['message' => 'Internal server error']],
             ]);

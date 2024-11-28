@@ -4,16 +4,12 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Api\Utils\{GraphQLHandler, Container};
 use Laminas\Diactoros\ServerRequestFactory;
-use Psr\Log\LoggerInterface;
 
 $container = Container::createContainer();
 
 $request = ServerRequestFactory::fromGlobals();
 
-$handler = new GraphQLHandler(
-    $container,
-    $container->get(LoggerInterface::class)
-);
+$handler = new GraphQLHandler($container);
 
 $response = $handler->handle($request);
 
