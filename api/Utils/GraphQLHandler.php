@@ -64,7 +64,7 @@ class GraphQLHandler implements RequestHandlerInterface
             ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
             ->withHeader('Access-Control-Allow-Credentials', 'true')
             ->withHeader('Content-Length', '0');
-            
+
         return $response;
     }
 
@@ -86,15 +86,25 @@ class GraphQLHandler implements RequestHandlerInterface
 
     private function executeQuery(string $query, ?array $variables = null): array
     {
-        $result = GraphQL::executeQuery(
-            $this->schema,
-            $query,
-            null,
-            null,
-            $variables
-        );
+        try {
+            $result = GraphQL::executeQuery(
+                $this->schema,
+                $query,
+                null,
+                null,
+                $variables
+            );
 
-        return $result->toArray();
+            return $result->toArray();
+        } catch (\Exception $e) {
+            return [
+                'errors' => [
+                    [
+                        'message'=> $e->getMessage(),
+                    ],
+                ],
+            ];
+        }
     }
 
     private function createResponse(int $status, array $data): ResponseInterface
