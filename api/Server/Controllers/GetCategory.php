@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Server\Controllers;
+namespace Api\Server\Controllers;
 
-use Server\Models\CategoryModel;
+use Api\Server\Models\CategoryModel;
 
 class GetCategory extends CategoryModel
 {

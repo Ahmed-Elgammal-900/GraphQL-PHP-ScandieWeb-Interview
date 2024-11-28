@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Server\Config;
+namespace Api\Server\Config;
 
-use Server\Config\Config;
+use Api\Server\Config\Config;
 
 class Database
 {

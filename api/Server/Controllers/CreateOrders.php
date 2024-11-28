@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Server\Controllers;
+namespace Api\Server\Controllers;
 
-use Server\Config\Database;
+use Api\Server\Config\Database;
 
 class CreateOrders
 {

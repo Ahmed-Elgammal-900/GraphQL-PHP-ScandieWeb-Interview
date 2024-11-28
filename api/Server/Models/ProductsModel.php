@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Server\Models;
+namespace Api\Server\Models;
 
-use Server\Config\Database;
+use Api\Server\Config\Database;
 
 abstract class ProductsModel
 {

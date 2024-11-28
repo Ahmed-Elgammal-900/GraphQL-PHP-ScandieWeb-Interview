@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Server\Controllers;
+namespace Api\Server\Controllers;
 
-use Server\Models\ProductsModel;
+use Api\Server\Models\ProductsModel;
 
 class GetProduct extends ProductsModel
 {

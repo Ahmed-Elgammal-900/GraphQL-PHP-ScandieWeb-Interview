@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Api\Types;
 
 use GraphQL\Type\Definition\{ObjectType, Type};
-use Server\Controllers\{GetCategory, GetProduct};
+use Api\Server\Controllers\{GetCategory, GetProduct};
 
 final class QueryType extends ObjectType
 {

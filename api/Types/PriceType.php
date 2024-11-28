@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Api\Types;
 
 use GraphQL\Type\Definition\{ObjectType, Type};
-use Server\Controllers\GetProduct;
+use Api\Server\Controllers\GetProduct;
 
 final class PriceType extends ObjectType
 {

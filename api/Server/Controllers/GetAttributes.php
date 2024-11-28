@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Server\Controllers;
+namespace Api\Server\Controllers;
 
-use Server\Models\AttributesModel;
+use Api\Server\Models\AttributesModel;
 
 class GetAttributes extends AttributesModel
 {

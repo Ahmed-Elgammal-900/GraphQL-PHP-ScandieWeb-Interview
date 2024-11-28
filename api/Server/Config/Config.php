@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Server\Config;
+namespace Api\Server\Config;
 
 use Dotenv\Dotenv;
 
