@@ -18,12 +18,8 @@ final class QueryType extends ObjectType
                 'categories' => [
                     'type' => Type::listof($categoryType),
                     'resolve' => function ($root, $args): mixed {
-                        try {
                         $category = new GetCategory();
                         return $category->getType();
-                        } catch (\Exception $e) {
-                            return $e->getMessage();
-                        }
                     }
                 ],
 
