@@ -6,7 +6,6 @@ namespace Api\Types;
 
 use GraphQL\Type\Definition\{ObjectType, Type};
 use Api\Server\Controllers\{GetCategory, GetProduct};
-use Api\Types\CategoryType;
 
 final class QueryType extends ObjectType
 {
@@ -17,10 +16,14 @@ final class QueryType extends ObjectType
             'fields' => [
 
                 'categories' => [
-                    'type' => Type::listof(new CategoryType()),
+                    'type' => Type::listof($categoryType),
                     'resolve' => function ($root, $args): mixed {
+                        try {
                         $category = new GetCategory();
                         return $category->getType();
+                        } catch (\Exception $e) {
+                            return $e->getMessage();
+                        }
                     }
                 ],
 
