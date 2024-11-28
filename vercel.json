@@ -1,11 +1,11 @@
 {
     "functions": {
-      "api/*.php": {
+      "Api/*.php": {
         "runtime": "vercel-php@0.7.3"
       }
     },
     "routes": [
-      { "src": "/(.*)",  "dest": "api/GraphQL.php" }
+      { "src": "/(.*)",  "dest": "Api/GraphQL.php" }
     ],
     "installCommand": "composer install"
 }
