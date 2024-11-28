@@ -26,7 +26,6 @@ final class AttributesType extends ObjectType
                 'type' => Type::string(),
             ]
         ];
-
         parent::__construct($config);
     }
 }

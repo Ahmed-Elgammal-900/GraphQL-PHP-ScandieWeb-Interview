@@ -24,7 +24,6 @@ final class PriceType extends ObjectType
                 ]
             ]
         ];
-
         parent::__construct($config);
     }
 }

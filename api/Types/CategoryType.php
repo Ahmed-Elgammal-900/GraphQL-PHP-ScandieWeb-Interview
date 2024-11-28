@@ -16,7 +16,6 @@ final class CategoryType extends ObjectType
                 'name' => Type::string()
             ]
         ];
-
         parent::__construct($config);
     }
 }

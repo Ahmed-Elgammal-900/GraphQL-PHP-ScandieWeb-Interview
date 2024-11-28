@@ -26,7 +26,6 @@ final class MutationType extends ObjectType
                 ]
             ]
         ];
-
         parent::__construct($config);
     }
 }

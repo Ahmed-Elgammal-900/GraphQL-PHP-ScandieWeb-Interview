@@ -24,7 +24,6 @@ final class InputType extends InputObjectType
                 'featurename' => Type::string(),
             ]
         ];
-
         parent::__construct($config);
     }
 }

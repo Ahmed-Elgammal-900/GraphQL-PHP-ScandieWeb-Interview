@@ -17,7 +17,6 @@ final class CurrencyType extends ObjectType
                 'sympol' => Type::string()
             ]
         ];
-
         parent::__construct($config);
     }
 }

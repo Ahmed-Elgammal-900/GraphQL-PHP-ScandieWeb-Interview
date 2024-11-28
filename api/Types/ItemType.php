@@ -18,7 +18,6 @@ final class ItemType extends ObjectType
                 'id' => Type::string()
             ]
         ];
-
         parent::__construct($config);
     }
 }

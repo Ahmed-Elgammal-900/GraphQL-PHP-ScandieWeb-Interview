@@ -43,8 +43,6 @@ final class ProductType extends ObjectType
                 'brand' => Type::string()
             ]
         ];
-
         parent::__construct($config);
-
     }
 }
