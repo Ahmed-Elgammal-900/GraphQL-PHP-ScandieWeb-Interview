@@ -6,7 +6,7 @@ namespace Api\Server\Config;
 
 use Dotenv\Dotenv;
 
-$projectRoot = dirname(__DIR__, 2);
+$projectRoot = dirname(__DIR__, 3);
 
 $dotenv = Dotenv::createImmutable($projectRoot);
 
