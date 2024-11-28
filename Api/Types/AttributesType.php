@@ -24,7 +24,6 @@ final class AttributesType extends ObjectType
                 ],
                 'name' => Type::string(),
                 'type' => Type::string(),
-
             ]
         ];
 
