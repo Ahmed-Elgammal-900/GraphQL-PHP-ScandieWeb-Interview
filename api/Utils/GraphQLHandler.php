@@ -10,6 +10,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use GraphQL\GraphQL;
 use GraphQL\Type\Schema;
 use Api\Types\{QueryType, MutationType};
+use GraphQL\Error\Error;
 
 class GraphQLHandler implements RequestHandlerInterface
 {
@@ -45,9 +46,9 @@ class GraphQLHandler implements RequestHandlerInterface
             $result = $this->executeQuery($input['query'], $input['variables'] ?? null);
 
             return $this->createResponse(200, $result);
-        } catch (\Throwable $e) {
+        } catch (Error $e) {
             return $this->createResponse(500, [
-                'errors' => [['message' => 'Internal server error']],
+                'errors' => [['message' => $e->getMessage()]],
             ]);
         }
     }
