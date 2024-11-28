@@ -1,10 +1,14 @@
 {
   "functions": {
     "api/*.php": {
-      "runtime": "vercel-php@0.6.2"
+      "runtime": "vercel-php@0.6.2",
+      "includeFiles": "vendor/**/*"
     }
   },
-  "routes": [{ "src": "/(.*)", "dest": "/api/index.php" }],
-
-  "installCommand": "apt-get install -y libssl1.0-dev"
+  "routes": [
+    { "src": "/(.*)", "dest": "/api/index.php" }
+  ],
+  "build": {
+    "command": "apt-get update && apt-get install -y libssl1.0-dev"
+  }
 }
