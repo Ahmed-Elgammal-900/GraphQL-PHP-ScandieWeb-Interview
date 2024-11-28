@@ -32,7 +32,7 @@ final class Container
             
             LoggerInterface::class => function () {
                 $logger = new Logger('graphql');
-                $logger->pushHandler(new StreamHandler(__DIR__ . '/../logs/app.log'));
+                $logger->pushHandler(new StreamHandler(__DIR__ . '/../tmp/app.log'));
                 return $logger;
             },
 
