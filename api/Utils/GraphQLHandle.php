@@ -46,6 +46,8 @@ class GraphQLHandle
 
             return $result->toArray();
         } catch (\Exception $e) {
+            error_log("Exception: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
             return [
                 'errors' => [
                     [
