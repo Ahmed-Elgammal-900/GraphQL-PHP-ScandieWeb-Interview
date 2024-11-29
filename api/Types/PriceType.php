@@ -6,7 +6,7 @@ namespace Api\Types;
 
 use GraphQL\Type\Definition\{ObjectType, Type};
 use Api\Server\Controllers\GetProduct;
-
+use Api\Types\CurrencyType;
 final class PriceType extends ObjectType
 {
     public function __construct(CurrencyType $currencyType)

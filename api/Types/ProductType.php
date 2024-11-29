@@ -6,6 +6,7 @@ namespace Api\Types;
 
 use GraphQL\Type\Definition\{ObjectType, Type};
 use Api\Server\Controllers\{GetAttributes, GetProduct};
+use Api\Types\{AttributesType, PriceType};
 
 final class ProductType extends ObjectType
 {

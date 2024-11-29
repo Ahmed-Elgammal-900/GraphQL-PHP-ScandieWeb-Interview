@@ -6,7 +6,7 @@ namespace Api\Types;
 
 use GraphQL\Type\Definition\{ObjectType, Type};
 use Api\Server\Controllers\GetAttributes;
-
+use Api\Types\ItemType;
 final class AttributesType extends ObjectType
 {
     public function __construct(ItemType $itemType)
