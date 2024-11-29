@@ -4,10 +4,6 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Api\Utils\{GraphQLHandle, Container};
 
-ini_set('display_errors', 1);
-ini_set('log_errors', 1); 
-error_reporting(E_ALL);
-
 $container = Container::createContainer();
 
 // $request = ServerRequestFactory::fromGlobals();
@@ -35,3 +31,7 @@ $output = $graphQL->executeQuery($query, $variableValues);
 
 header('Content-Type: application/json');
 echo json_encode($output);
+
+ini_set('display_errors', 1);
+ini_set('log_errors', 1); 
+error_reporting(E_ALL);
