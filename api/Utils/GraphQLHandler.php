@@ -47,7 +47,7 @@ class GraphQLHandler implements RequestHandlerInterface
             return $this->createResponse(200, $result);
         } catch (\Throwable $e) {
             return $this->createResponse(500, [
-                'errors' => [['message' => 'Internal server error']],
+                'errors' => [['message' => $e->getMessage()]],
             ]);
         }
     }

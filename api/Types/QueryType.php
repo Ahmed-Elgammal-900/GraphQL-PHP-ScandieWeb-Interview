@@ -14,24 +14,13 @@ final class QueryType extends ObjectType
         $config = [
             'name' => 'Query',
             'fields' => [
-
                 'categories' => [
                     'type' => Type::listof($categoryType),
                     'resolve' => function ($root, $args): mixed {
-                        try {
-                            $category = new GetCategory();
-                            return $category->getType();
-                        } catch (\Throwable $th) {
-                            return [
-                                'error' => [
-                                    'message' => $th->getMessage(),
-                                    'code' => $th->getCode(),
-                                ],
-                            ];
-                        }
+                        $category = new GetCategory();
+                        return $category->getType();
                     }
                 ],
-
                 'product' => [
                     'type' => $productType,
                     'args' => [
@@ -42,7 +31,6 @@ final class QueryType extends ObjectType
                         return $type->getByID();
                     },
                 ],
-
                 'products' => [
                     'type' => Type::listof($productType),
                     'resolve' => function ($root, $args): mixed {

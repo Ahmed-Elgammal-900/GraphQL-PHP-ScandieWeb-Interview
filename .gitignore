@@ -1,5 +1,3 @@
 /vendor
 .env
 .vscode
-api/tmp/*
-!api/tmp/.gitkeep
