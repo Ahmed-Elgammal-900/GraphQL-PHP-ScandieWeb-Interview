@@ -4,6 +4,9 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Api\Utils\{GraphQLHandle, Container};
 
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 $container = Container::createContainer();
 
 // $request = ServerRequestFactory::fromGlobals();
