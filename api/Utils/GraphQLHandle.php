@@ -50,7 +50,7 @@ class GraphQLHandle
             return [
                 'errors' => [
                     [
-                        'message' => $e->getMessage(),
+                        // 'message' => $e->getMessage(),
                         'stack' => $e->getTraceAsString()
                     ]
                 ]
