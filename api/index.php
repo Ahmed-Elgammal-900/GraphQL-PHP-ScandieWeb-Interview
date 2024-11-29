@@ -31,7 +31,3 @@ $output = $graphQL->executeQuery($query, $variableValues);
 
 header('Content-Type: application/json');
 echo json_encode($output);
-
-ini_set('display_errors', 1);
-ini_set('log_errors', 1); 
-error_reporting(E_ALL);
