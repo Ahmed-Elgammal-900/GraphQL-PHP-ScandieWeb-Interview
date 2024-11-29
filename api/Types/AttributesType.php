@@ -16,7 +16,7 @@ final class AttributesType extends ObjectType
             'fields' => [
                 'id' => Type::string(),
                 'items' => [
-                    'type' => Type::listof(type: $itemType),
+                    'type' => Type::listof($itemType),
                     'resolve' => function ($attributes): mixed {
                         $item = new GetAttributes($attributes['productid'], $attributes['id']);
                         return $item->getAllItems();

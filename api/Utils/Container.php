@@ -25,6 +25,7 @@ final class Container
     public static function createContainer(): ContainerInterface
     {
         $containerBuilder = new ContainerBuilder();
+        $containerBuilder->enableCompilation(__DIR__ . "/../tmp/");
         $containerBuilder->addDefinitions([
 
             ResponseInterface::class => function (): ResponseInterface {
