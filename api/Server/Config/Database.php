@@ -5,55 +5,52 @@ declare(strict_types=1);
 namespace Api\Server\Config;
 
 use Api\Server\Config\Config;
+use PDO;
+use PDOException;
 
 class Database
 {
-    private static $instance = null;
-    private $connection;
+    private static ?Database $instance = null;
+    private PDO $connection;
     private function __construct()
     {
 
         $config = new Config();
-        $this->connection = new \mysqli(
-        $config->getDbHost(), 
-        $config->getDbUser(), 
-        $config->getDbPass(), 
-        $config->getDbName(), 
-        $config->getDbPort()
+        $dsn = sprintf(
+            'mysql:host=%s;dbname=%s;port=%s;charset=utf8mb4',
+            $config->getHost(),
+            $config->getName(),
+            $config->getPort()
         );
-        $this->connection->ssl_set(null, null, $config->getSslCa(), null, null);
-        $this->connection->options(MYSQLI_OPT_SSL_VERIFY_SERVER_CERT, true);
-        $this->connection->options(MYSQLI_OPT_CONNECT_TIMEOUT, 1000);
+        $options = [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES => false,
+            PDO::MYSQL_ATTR_SSL_CA => $config->getSslCaPath()
+        ];
 
-        if (
-            !$this->connection->real_connect(
-                $config->getDbHost(),
-                $config->getDbUser(),
-                $config->getDbPass(),
-                $config->getDbName(),
-                $config->getDbPort(),
-                null,
-                MYSQLI_CLIENT_SSL
-            )
-        ) {
-            die("Connection failed with SSL: " . $this->connection->connect_error);
-        }
-
-        if ($this->connection->connect_error) {
-            die("Connection failed: " . $this->connection->connect_error);
+        try {
+            $this->connection = new PDO(
+                $dsn,
+                $config->getUser(),
+                $config->getPass(),
+                $options
+            );
+        } catch (PDOException $e) {
+            throw new \RuntimeException('Database connection failed: ' . $e->getMessage());
         }
 
     }
 
-    public static function getInstance(): Database
+    public static function getInstance(): self
     {
         if (self::$instance == null) {
-            self::$instance = new Database();
+            self::$instance = new self();
         }
         return self::$instance;
     }
 
-    public function getConnection(): \mysqli
+    public function getConnection(): PDO
     {
         return $this->connection;
     }

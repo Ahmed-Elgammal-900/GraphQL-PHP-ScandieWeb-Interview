@@ -7,9 +7,7 @@ namespace Api\Server\Config;
 use Dotenv\Dotenv;
 
 $projectRoot = dirname(__DIR__, 3);
-
 $dotenv = Dotenv::createImmutable($projectRoot);
-
 $dotenv->load();
 
 class Config
@@ -19,7 +17,7 @@ class Config
     private static $dbUser;
     private static $dbPass;
     private static $dbPort;
-    private static $sslCa;
+    private static $sslCaPath;
 
     function __construct()
     {
@@ -28,36 +26,37 @@ class Config
         self::$dbUser = $_ENV['DB_USER'];
         self::$dbPass = $_ENV['DB_PASS'];
         self::$dbPort = $_ENV['DB_PORT'];
-        self::$sslCa = base64_decode($_ENV['SSL_CA']);
+        self::$sslCaPath = $_ENV['SSL_CA_PATH'];
+
     }
 
-    public function getDbHost(): string
+    public function getHost(): string
     {
         return (string) self::$dbHost;
     }
 
-    public function getDbName(): string
+    public function getName(): string
     {
         return (string) self::$dbName;
     }
 
-    public function getDbUser(): string
+    public function getUser(): string
     {
         return (string) self::$dbUser;
     }
 
-    public function getDbPass(): string
+    public function getPass(): string
     {
         return (string) self::$dbPass;
     }
 
-    public function getDbPort(): int
+    public function getPort(): int
     {
         return (int) self::$dbPort;
     }
 
-    public function getSslCa(): string
+    public function getSslCaPath(): string
     {
-        return (string) self::$sslCa;
+        return (string) __DIR__ . self::$sslCaPath;
     }
 }
