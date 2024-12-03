@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Api\Server\Controllers;
 
 use Api\Server\Models\CategoryModel;
+use PDO;
 
 class GetCategory extends CategoryModel
 {
@@ -13,9 +14,7 @@ class GetCategory extends CategoryModel
         $sql = "SELECT * FROM category";
         $stmt = $this->connection->prepare($sql);
         $stmt->execute();
-        $result = $stmt->get_result();
-        $data = $result->fetch_all(MYSQLI_ASSOC);
-        $stmt->close();
-        return $data;
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
     }
 }

@@ -43,8 +43,6 @@ class CreateOrders
             $stmt->execute($values);
         }
 
-        $stmt->close();
-
         return 'Your Orders Have been received';
     }
 }
