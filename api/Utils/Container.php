@@ -67,7 +67,7 @@ final class Container
                 return new MutationType($container->get(InputType::class));
             },
         ]);
-
+        
         return $containerBuilder->build();
     }
 }
