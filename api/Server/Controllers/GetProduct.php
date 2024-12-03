@@ -20,9 +20,9 @@ class GetProduct extends ProductsModel
 
     public function getByID(): mixed
     {
-        $sql = "SELECT * FROM products WHERE id = :id";
+        $sql = "SELECT * FROM products WHERE id = :productid";
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindValue("", $this->productId, PDO::PARAM_STR);
+        $stmt->bindValue(":productid", $this->productId, PDO::PARAM_STR);
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $result;
@@ -30,7 +30,7 @@ class GetProduct extends ProductsModel
 
     public function getGallery(): array
     {
-        $sql = "SELECT gallery FROM gallery WHERE id = :id";
+        $sql = "SELECT gallery FROM gallery WHERE id = :productid";
         $stmt = $this->connection->prepare($sql);
         $stmt->bindValue(":productid", $this->productId, PDO::PARAM_STR);
         $stmt->execute();
