@@ -24,7 +24,7 @@ class GetProduct extends ProductsModel
         $stmt = $this->connection->prepare($sql);
         $stmt->bindValue(":productid", $this->productId, PDO::PARAM_STR);
         $stmt->execute();
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result;
     }
 
