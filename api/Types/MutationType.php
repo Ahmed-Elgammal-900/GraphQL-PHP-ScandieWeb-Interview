@@ -7,6 +7,7 @@ namespace Api\Types;
 use GraphQL\Type\Definition\{ObjectType, Type};
 use Api\Server\Controllers\CreateOrders;
 use Api\Types\InputType;
+
 final class MutationType extends ObjectType
 {
     public function __construct(InputType $inputType)

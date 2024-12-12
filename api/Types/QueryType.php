@@ -7,6 +7,7 @@ namespace Api\Types;
 use GraphQL\Type\Definition\{ObjectType, Type};
 use Api\Server\Controllers\{GetCategory, GetProduct};
 use Api\Types\{CategoryType, ProductType};
+
 final class QueryType extends ObjectType
 {
     public function __construct(CategoryType $categoryType, ProductType $productType)
