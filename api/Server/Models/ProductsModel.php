@@ -20,7 +20,6 @@ abstract class ProductsModel
     }
 
     abstract public function getProduct();
-    abstract public function getByID();
     abstract public function getGallery();
     abstract public function getCurrency();
     abstract public function getPrice();

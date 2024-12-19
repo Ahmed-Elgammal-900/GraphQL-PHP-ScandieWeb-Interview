@@ -22,16 +22,6 @@ final class QueryType extends ObjectType
                         return $category->getType();
                     }
                 ],
-                'product' => [
-                    'type' => $productType,
-                    'args' => [
-                        'id' => Type::nonNull(Type::string())
-                    ],
-                    'resolve' => function ($root, $args): mixed {
-                        $type = new GetProduct($args['id']);
-                        return $type->getByID();
-                    },
-                ],
                 'products' => [
                     'type' => Type::listof($productType),
                     'resolve' => function ($root, $args): mixed {

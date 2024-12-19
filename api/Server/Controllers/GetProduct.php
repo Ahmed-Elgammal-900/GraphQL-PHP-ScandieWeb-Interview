@@ -18,16 +18,6 @@ class GetProduct extends ProductsModel
         return $result;
     }
 
-    public function getByID(): mixed
-    {
-        $sql = "SELECT * FROM products WHERE id = :productid";
-        $stmt = $this->connection->prepare($sql);
-        $stmt->bindValue(":productid", $this->productId, PDO::PARAM_STR);
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result;
-    }
-
     public function getGallery(): array
     {
         $sql = "SELECT gallery FROM gallery WHERE id = :productid";
