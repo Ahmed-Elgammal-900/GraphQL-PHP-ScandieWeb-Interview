@@ -27,8 +27,8 @@ class CreateOrders
             $values = array_values($items['items'][$i]);
             $placeholders = array_fill(0, count($keys), '?');
 
-            $type = preg_replace(pattern: '/[^a-zA-Z0-9_]/', replacement: '', subject: $type);
-            $table = "$type orders";
+            $type = preg_replace('/[^a-zA-Z0-9_]/', '',  $type);
+            $table = $type."orders";
 
             $safeKeys = array_map(function ($key): string {
                 return preg_replace('/[^a-zA-Z0-9_]/', '', $key);
