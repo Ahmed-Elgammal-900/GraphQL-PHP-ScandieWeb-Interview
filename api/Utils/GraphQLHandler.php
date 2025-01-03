@@ -54,7 +54,6 @@ class GraphQLHandler implements RequestHandlerInterface
 
     private function createPreflightResponse(): ResponseInterface
     {
-        /** @var ResponseInterface $response */
         $response = $this->container->get(ResponseInterface::class);
 
         $response = $response
@@ -100,7 +99,7 @@ class GraphQLHandler implements RequestHandlerInterface
             return [
                 'errors' => [
                     [
-                        'message'=> $e->getMessage(),
+                        'message' => $e->getMessage(),
                     ],
                 ],
             ];
@@ -109,7 +108,6 @@ class GraphQLHandler implements RequestHandlerInterface
 
     private function createResponse(int $status, array $data): ResponseInterface
     {
-        /** @var ResponseInterface $response */
         $response = $this->container->get(ResponseInterface::class);
 
         $response = $response
