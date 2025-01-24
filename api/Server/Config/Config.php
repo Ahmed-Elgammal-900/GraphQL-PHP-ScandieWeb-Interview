@@ -26,7 +26,6 @@ class Config
         self::$dbUser = $_ENV['DB_USER'];
         self::$dbPass = $_ENV['DB_PASS'];
         self::$dbPort = $_ENV['DB_PORT'];
-        self::$sslCaPath = $_ENV['SSL_CA_PATH'];
 
     }
 
@@ -53,10 +52,5 @@ class Config
     public function getPort(): int
     {
         return (int) self::$dbPort;
-    }
-
-    public function getSslCaPath(): string
-    {
-        return (string) __DIR__ . self::$sslCaPath;
     }
 }
