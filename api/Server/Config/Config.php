@@ -11,7 +11,6 @@ class Config
     private static $dbUser;
     private static $dbPass;
     private static $dbPort;
-    private static $sslCaPath;
 
     function __construct()
     {
