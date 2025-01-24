@@ -4,12 +4,6 @@ declare(strict_types=1);
 
 namespace Api\Server\Config;
 
-use Dotenv\Dotenv;
-
-$projectRoot = dirname(__DIR__, 3);
-$dotenv = Dotenv::createImmutable($projectRoot);
-$dotenv->load();
-
 class Config
 {
     private static $dbHost;
@@ -26,7 +20,6 @@ class Config
         self::$dbUser = $_ENV['DB_USER'];
         self::$dbPass = $_ENV['DB_PASS'];
         self::$dbPort = $_ENV['DB_PORT'];
-
     }
 
     public function getHost(): string
