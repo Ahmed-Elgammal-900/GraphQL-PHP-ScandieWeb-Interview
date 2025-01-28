@@ -7,6 +7,7 @@ namespace Api\Utils;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\{ResponseInterface, ServerRequestInterface};
 use Psr\Http\Server\RequestHandlerInterface;
+use GuzzleHttp\Psr7\Utils;
 use GraphQL\GraphQL;
 use GraphQL\Type\Schema;
 use Api\Types\{QueryType, MutationType};
@@ -56,15 +57,13 @@ class GraphQLHandler implements RequestHandlerInterface
     {
         $response = $this->container->get(ResponseInterface::class);
 
-        $response = $response
+        return $response
             ->withStatus(200)
             ->withHeader('Access-Control-Allow-Origin', '*')
             ->withHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
             ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
             ->withHeader('Access-Control-Allow-Credentials', 'true')
             ->withHeader('Content-Length', '0');
-
-        return $response;
     }
 
     private function parseInput(ServerRequestInterface $request): array
@@ -109,17 +108,15 @@ class GraphQLHandler implements RequestHandlerInterface
     private function createResponse(int $status, array $data): ResponseInterface
     {
         $response = $this->container->get(ResponseInterface::class);
+        $body = Utils::streamFor(json_encode($data));
 
-        $response = $response
+        return $response
             ->withStatus($status)
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Access-Control-Allow-Origin', '*')
             ->withHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
             ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-            ->withHeader('Access-Control-Allow-Credentials', 'true');
-
-        $response->getBody()->write(json_encode($data));
-
-        return $response;
+            ->withHeader('Access-Control-Allow-Credentials', 'true')
+            ->withBody($body);
     }
 }
