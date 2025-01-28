@@ -14,13 +14,13 @@ class Database
     private PDO $connection;
     private function __construct()
     {
+        Config::initialize();
 
-        $config = new Config();
         $dsn = sprintf(
             'mysql:host=%s;dbname=%s;port=%s;charset=utf8mb4',
-            $config->getHost(),
-            $config->getName(),
-            $config->getPort()
+            Config::getHost(),
+            Config::getName(),
+            Config::getPort()
         );
         $options = [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -31,14 +31,13 @@ class Database
         try {
             $this->connection = new PDO(
                 $dsn,
-                $config->getUser(),
-                $config->getPass(),
+                Config::getUser(),
+                Config::getPass(),
                 $options
             );
         } catch (PDOException $e) {
             throw new \RuntimeException('Database connection failed: ' . $e->getMessage());
         }
-
     }
 
     public static function getInstance(): self

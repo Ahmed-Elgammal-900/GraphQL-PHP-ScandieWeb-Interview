@@ -6,43 +6,45 @@ namespace Api\Server\Config;
 
 class Config
 {
-    private static $dbHost;
-    private static $dbName;
-    private static $dbUser;
-    private static $dbPass;
-    private static $dbPort;
+    private static ?string $dbHost = null;
+    private static ?string $dbName = null;
+    private static ?string $dbUser = null;
+    private static ?string $dbPass = null;
+    private static ?int $dbPort = null;
 
-    function __construct()
+    public static function initialize(): void
     {
-        self::$dbHost = $_ENV['DB_HOST'];
-        self::$dbName = $_ENV['DB_NAME'];
-        self::$dbUser = $_ENV['DB_USER'];
-        self::$dbPass = $_ENV['DB_PASS'];
-        self::$dbPort = $_ENV['DB_PORT'];
+        if (self::$dbHost === null) {
+            self::$dbHost = $_ENV['DB_HOST'];
+            self::$dbName = $_ENV['DB_NAME'];
+            self::$dbUser = $_ENV['DB_USER'];
+            self::$dbPass = $_ENV['DB_PASS'];
+            self::$dbPort = (int) $_ENV['DB_PORT'];
+        }
     }
 
-    public function getHost(): string
+    public static function getHost(): string
     {
-        return (string) self::$dbHost;
+        return self::$dbHost;  
     }
 
-    public function getName(): string
+    public static function getName(): string
     {
-        return (string) self::$dbName;
+        return self::$dbName;  
     }
 
-    public function getUser(): string
+    public static function getUser(): string
     {
-        return (string) self::$dbUser;
+        return self::$dbUser;  
     }
 
-    public function getPass(): string
+    public static function getPass(): string
     {
-        return (string) self::$dbPass;
+        return self::$dbPass;  
     }
 
-    public function getPort(): int
+    public static function getPort(): int
     {
-        return (int) self::$dbPort;
+        return self::$dbPort;  
     }
 }
