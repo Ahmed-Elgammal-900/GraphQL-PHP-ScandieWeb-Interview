@@ -3,11 +3,11 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Api\Utils\{GraphQLHandler, Container};
-use Laminas\Diactoros\ServerRequestFactory;
+use GuzzleHttp\Psr7\ServerRequest;
 
 $container = Container::createContainer();
 
-$request = ServerRequestFactory::fromGlobals();
+$request = ServerRequest::fromGlobals();
 
 $handler = new GraphQLHandler($container);
 
