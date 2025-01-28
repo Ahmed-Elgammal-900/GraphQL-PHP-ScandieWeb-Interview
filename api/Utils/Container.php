@@ -6,7 +6,7 @@ namespace Api\Utils;
 
 use DI\ContainerBuilder;
 use Psr\Container\ContainerInterface;
-use Laminas\Diactoros\ResponseFactory;
+use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Api\Types\{
     ItemType, 
@@ -28,7 +28,7 @@ final class Container
         $containerBuilder->addDefinitions([
 
             ResponseInterface::class => function (): ResponseInterface {
-                return (new ResponseFactory())->createResponse();
+                return new Response();
             },
 
             ItemType::class => function (): ItemType {
