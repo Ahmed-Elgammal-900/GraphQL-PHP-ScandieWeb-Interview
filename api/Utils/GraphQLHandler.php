@@ -56,13 +56,15 @@ class GraphQLHandler implements RequestHandlerInterface
     {
         $response = $this->container->get(ResponseInterface::class);
 
-        return $response
+        $response = $response
             ->withStatus(200)
             ->withHeader('Access-Control-Allow-Origin', '*')
             ->withHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
             ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
             ->withHeader('Access-Control-Allow-Credentials', 'true')
             ->withHeader('Content-Length', '0');
+        
+        return $response;
     }
 
     private function parseInput(ServerRequestInterface $request): array
