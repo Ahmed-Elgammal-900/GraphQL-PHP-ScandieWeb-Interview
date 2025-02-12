@@ -25,6 +25,7 @@ final class Container
     public static function createContainer(): ContainerInterface
     {
         $containerBuilder = new ContainerBuilder();
+        
         $containerBuilder->addDefinitions([
 
             ResponseInterface::class => fn(): ResponseInterface => new Response(),
