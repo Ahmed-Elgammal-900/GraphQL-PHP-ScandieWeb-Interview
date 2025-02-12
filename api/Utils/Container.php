@@ -9,14 +9,14 @@ use Psr\Container\ContainerInterface;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Api\Types\{
-    ItemType, 
-    CategoryType, 
-    CurrencyType, 
-    AttributesType, 
-    PriceType, 
-    ProductType, 
-    InputType, 
-    QueryType, 
+    ItemType,
+    CategoryType,
+    CurrencyType,
+    AttributesType,
+    PriceType,
+    ProductType,
+    InputType,
+    QueryType,
     MutationType
 };
 
@@ -27,47 +27,27 @@ final class Container
         $containerBuilder = new ContainerBuilder();
         $containerBuilder->addDefinitions([
 
-            ResponseInterface::class => function (): ResponseInterface {
-                return new Response();
-            },
+            ResponseInterface::class => fn(): ResponseInterface => new Response(),
 
-            ItemType::class => function (): ItemType {
-                return new ItemType();
-            },
+            ItemType::class => fn(): ItemType => new ItemType(),
 
-            CategoryType::class => function (): CategoryType {
-                return new CategoryType();
-            },
+            CategoryType::class => fn(): CategoryType => new CategoryType(),
 
-            CurrencyType::class => function (): CurrencyType {
-                return new CurrencyType();
-            },
+            CurrencyType::class => fn(): CurrencyType => new CurrencyType(),
 
-            AttributesType::class => function (ContainerInterface $container): AttributesType {
-                return new AttributesType($container->get(ItemType::class));
-            },
+            InputType::class => fn(): InputType => new InputType(),
 
-            PriceType::class => function (ContainerInterface $container): PriceType {
-                return new PriceType($container->get(CurrencyType::class));
-            },
+            AttributesType::class => fn(ContainerInterface $container): AttributesType => new AttributesType($container->get(ItemType::class)),
 
-            ProductType::class => function (ContainerInterface $container): ProductType {
-                return new ProductType($container->get(AttributesType::class), $container->get(PriceType::class));
-            },
+            PriceType::class => fn(ContainerInterface $container): PriceType => new PriceType($container->get(CurrencyType::class)),
 
-            InputType::class => function (): InputType {
-                return new InputType();
-            },
+            ProductType::class => fn(ContainerInterface $container): ProductType => new ProductType($container->get(AttributesType::class), $container->get(PriceType::class)),
 
-            QueryType::class => function (ContainerInterface $container): QueryType {
-                return new QueryType($container->get(CategoryType::class), $container->get(ProductType::class));
-            },
+            QueryType::class => fn(ContainerInterface $container): QueryType => new QueryType($container->get(CategoryType::class), $container->get(ProductType::class)),
 
-            MutationType::class => function (ContainerInterface $container): MutationType {
-                return new MutationType($container->get(InputType::class));
-            },
+            MutationType::class => fn(ContainerInterface $container): MutationType => new MutationType($container->get(InputType::class)),
         ]);
-        
+
         return $containerBuilder->build();
     }
 }
