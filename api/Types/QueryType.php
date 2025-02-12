@@ -16,14 +16,14 @@ final class QueryType extends ObjectType
             'name' => 'Query',
             'fields' => [
                 'categories' => [
-                    'type' => Type::listof($categoryType),
+                    'type' => Type::listOf($categoryType),
                     'resolve' => function ($root, $args): mixed {
                         $category = new GetCategory();
                         return $category->getType();
                     }
                 ],
                 'products' => [
-                    'type' => Type::listof($productType),
+                    'type' => Type::listOf($productType),
                     'resolve' => function ($root, $args): mixed {
                         $all = new GetProduct();
                         return $all->getProduct();

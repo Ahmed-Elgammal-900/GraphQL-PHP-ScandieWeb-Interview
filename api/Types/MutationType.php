@@ -18,7 +18,7 @@ final class MutationType extends ObjectType
                 'createOrders' => [
                     'type' => Type::string(),
                     'args' => [
-                        'items' => Type::listof($inputType)
+                        'items' => Type::listOf($inputType)
                     ],
                     'resolve' => function ($root, $args): string {
                         $Orders = new CreateOrders();

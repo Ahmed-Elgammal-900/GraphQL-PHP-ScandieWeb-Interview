@@ -19,7 +19,7 @@ final class ProductType extends ObjectType
                 'name' => Type::string(),
                 'instock' => Type::string(),
                 'gallery' => [
-                    'type' => Type::listof(Type::string()),
+                    'type' => Type::listOf(Type::string()),
                     'resolve' => function ($product): array {
                         $gallery = new GetProduct($product['id']);
                         return $gallery->getGallery();
@@ -28,7 +28,7 @@ final class ProductType extends ObjectType
                 'description' => Type::string(),
                 'category' => Type::string(),
                 'attributes' => [
-                    'type' => Type::listof($attributesType),
+                    'type' => Type::listOf($attributesType),
                     'resolve' => function ($product): mixed {
                         $attr = new GetAttributes($product['id']);
                         return $attr->getAttribute();
