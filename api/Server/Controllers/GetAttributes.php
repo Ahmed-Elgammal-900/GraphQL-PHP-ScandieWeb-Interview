@@ -13,7 +13,7 @@ class GetAttributes extends AttributesModel
     {
         $sql = "SELECT productid, type as id, type as name, role as type FROM productsattr WHERE productid = :productid GROUP BY productid, type, role";
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindValue(":productid", $this->id, PDO::PARAM_STR);
+        $stmt->bindValue(":productid", $this->productId, PDO::PARAM_STR);
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $result;
@@ -23,7 +23,7 @@ class GetAttributes extends AttributesModel
     {
         $sql = "SELECT displayValue, value,  id FROM productsattr WHERE productid = :productid AND type = :type";
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindValue(":productid", $this->id, PDO::PARAM_STR);
+        $stmt->bindValue(":productid", $this->productId, PDO::PARAM_STR);
         $stmt->bindValue(":type", $this->type, PDO::PARAM_STR);
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);

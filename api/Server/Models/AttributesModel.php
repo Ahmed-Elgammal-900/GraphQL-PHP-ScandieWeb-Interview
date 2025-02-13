@@ -8,16 +8,16 @@ use Api\Server\Config\Database;
 
 abstract class AttributesModel
 {
-    protected $db;
-    protected $id;
-    protected $type;
-    protected $connection;
+    protected Database $database;
+    protected string $productId;
+    protected ?string $type;
+    protected \PDO $connection;
 
     public function __construct($id, $type = null)
     {
-        $this->db = Database::getInstance();
-        $this->connection = $this->db->getConnection();
-        $this->id = $id;
+        $this->database = Database::getInstance();
+        $this->connection = $this->database->getConnection();
+        $this->productId = $id;
         $this->type = $type;
     }
 

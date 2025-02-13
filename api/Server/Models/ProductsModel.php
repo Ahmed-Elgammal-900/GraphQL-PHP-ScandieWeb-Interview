@@ -8,14 +8,14 @@ use Api\Server\Config\Database;
 
 abstract class ProductsModel
 {
-    protected $db;
-    protected $productId;
-    protected $connection;
+    protected Database $database;
+    protected ?string $productId;
+    protected \PDO $connection;
 
     public function __construct($productId = null)
     {
-        $this->db = Database::getInstance();
-        $this->connection = $this->db->getConnection();
+        $this->database = Database::getInstance();
+        $this->connection = $this->database->getConnection();
         $this->productId = $productId;
     }
 

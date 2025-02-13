@@ -8,13 +8,13 @@ use Api\Server\Config\Database;
 
 abstract class CategoryModel
 {
-    protected $db;
-    protected $connection;
+    protected Database $database;
+    protected \PDO $connection;
     
     public function __construct()
     {
-        $this->db = Database::getInstance();
-        $this->connection = $this->db->getConnection();
+        $this->database = Database::getInstance();
+        $this->connection = $this->database->getConnection();
     }
 
     abstract public function getType();
