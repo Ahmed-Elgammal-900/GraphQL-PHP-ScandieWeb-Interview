@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Api\Types;
 
 use GraphQL\Type\Definition\{ObjectType, Type};
-use Api\Server\Controllers\GetAttributes;
+use Api\Server\Resolvers\GetAttributes;
 use Api\Types\ItemType;
 
 final class AttributesType extends ObjectType

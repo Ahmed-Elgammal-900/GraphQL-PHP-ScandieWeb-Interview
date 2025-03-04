@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Api\Server\Controllers;
+namespace Api\Server\Resolvers;
 
 use Api\Server\Models\AttributesModel;
 use PDO;

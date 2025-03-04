@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Api\Types;
 
 use GraphQL\Type\Definition\{ObjectType, Type};
-use Api\Server\Controllers\CreateOrders;
+use Api\Server\Resolvers\CreateOrders;
 use Api\Types\InputType;
 
 final class MutationType extends ObjectType

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Api\Server\Controllers;
+namespace Api\Server\Resolvers;
 
 use Api\Server\Config\Database;
 
