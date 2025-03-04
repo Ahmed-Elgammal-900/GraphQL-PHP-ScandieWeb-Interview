@@ -4,7 +4,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Api\Utils\{GraphQLHandler, Container};
 use GuzzleHttp\Psr7\ServerRequest;
-use FastRoute\RouteCollector;
+use FastRoute\{RouteCollector, Dispatcher};
 
 $request = ServerRequest::fromGlobals();
 $httpMethod = $request->getMethod();
@@ -22,18 +22,18 @@ $routeInfo = $dispatcher->dispatch(
 );
 
 switch ($routeInfo[0]) {
-    case FastRoute\Dispatcher::NOT_FOUND:
+    case Dispatcher::NOT_FOUND:
         http_response_code(404);
         header('Content-Type: application/json');
         echo json_encode(['error' => 'Not Found']);
         break;
-    case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
+    case Dispatcher::METHOD_NOT_ALLOWED:
         $allowedMethods = $routeInfo[1];
         http_response_code(405);
         header('Content-Type: application/json');
         echo json_encode(['error' => 'Method Not Allowed', 'allowed' => $allowedMethods]);
         break;
-    case FastRoute\Dispatcher::FOUND:
+    case Dispatcher::FOUND:
         [$class, $method] = $routeInfo[1];
 
         $container = Container::createContainer();
