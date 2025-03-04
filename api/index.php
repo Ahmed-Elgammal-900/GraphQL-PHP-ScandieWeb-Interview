@@ -13,6 +13,7 @@ $uri = $request->getUri()->getPath();
 
 $dispatcher = FastRoute\simpleDispatcher(function (RouteCollector $r): void {
     $r->post('/graphql', [GraphQLHandler::class, 'handle']);
+    $r->addRoute('OPTIONS', '/graphql', [GraphQLHandler::class, 'handle']);
 });
 
 $routeInfo = $dispatcher->dispatch(
@@ -23,11 +24,13 @@ $routeInfo = $dispatcher->dispatch(
 switch ($routeInfo[0]) {
     case FastRoute\Dispatcher::NOT_FOUND:
         http_response_code(404);
+        header('Content-Type: application/json');
         echo json_encode(['error' => 'Not Found']);
         break;
     case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
         $allowedMethods = $routeInfo[1];
         http_response_code(405);
+        header('Content-Type: application/json');
         echo json_encode(['error' => 'Method Not Allowed', 'allowed' => $allowedMethods]);
         break;
     case FastRoute\Dispatcher::FOUND:
