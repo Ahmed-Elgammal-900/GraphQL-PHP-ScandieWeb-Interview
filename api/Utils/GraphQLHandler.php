@@ -57,7 +57,7 @@ class GraphQLHandler implements RequestHandlerInterface
         $response = $this->container->get(ResponseInterface::class);
 
         $response = $response
-            ->withStatus(200)
+            ->withStatus(204)
             ->withHeader('Access-Control-Allow-Origin', '*')
             ->withHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
             ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
