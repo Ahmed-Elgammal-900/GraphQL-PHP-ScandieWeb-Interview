@@ -52,7 +52,7 @@ class Config
 
     public static function getCA(): string
     {
-        $path = __DIR__ . "/../tmp/ca-cert.pem";
+        $path = "/tmp/ca-cert.pem";
         $decodedKey = base64_decode(self::$caKey);
         if (file_put_contents($path, $decodedKey) === false) {
             throw new \Exception("Failed to write CA certificate to file.");
