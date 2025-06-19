@@ -11,6 +11,7 @@ class Config
     private static ?string $dbUser = null;
     private static ?string $dbPass = null;
     private static ?int $dbPort = null;
+    private static ?string $caKey = null;
 
     public static function initialize(): void
     {
@@ -20,31 +21,42 @@ class Config
             self::$dbUser = $_ENV['DB_USER'];
             self::$dbPass = $_ENV['DB_PASS'];
             self::$dbPort = (int) $_ENV['DB_PORT'];
+            self::$caKey = $_ENV['CA_KEY'];
         }
     }
 
     public static function getHost(): string
     {
-        return self::$dbHost;  
+        return self::$dbHost;
     }
 
     public static function getName(): string
     {
-        return self::$dbName;  
+        return self::$dbName;
     }
 
     public static function getUser(): string
     {
-        return self::$dbUser;  
+        return self::$dbUser;
     }
 
     public static function getPass(): string
     {
-        return self::$dbPass;  
+        return self::$dbPass;
     }
 
     public static function getPort(): int
     {
-        return self::$dbPort;  
+        return self::$dbPort;
+    }
+
+    public static function getCA(): string
+    {
+        $path = "../tmp/ca-cert.pem";
+        $decodedKey = base64_decode(self::$caKey);
+        if (file_put_contents($path, $decodedKey) === false) {
+            throw new \Exception("Failed to write CA certificate to file.");
+        }
+        return $path;
     }
 }
