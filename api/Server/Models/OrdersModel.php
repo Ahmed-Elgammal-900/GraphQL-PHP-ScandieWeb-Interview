@@ -17,5 +17,5 @@ abstract class OrdersModel
         $this->connection = $this->database->getConnection();
     }
 
-    abstract public function createOrders($items);
+    abstract public function makeOrders($items);
 }

@@ -9,7 +9,7 @@ use Api\Server\Models\OrdersModel;
 class CreateOrders extends OrdersModel
 {
 
-    public function createOrders($items): string
+    public function makeOrders($items): string
     {
         for ($i = 0; $i < count($items['items']); $i++) {
             $type = $items['items'][$i]['type'];

@@ -22,7 +22,7 @@ final class MutationType extends ObjectType
                     ],
                     'resolve' => function ($root, $args): string {
                         $Orders = new CreateOrders();
-                        return $Orders->createOrders($args);
+                        return $Orders->makeOrders($args);
                     }
                 ]
             ]
