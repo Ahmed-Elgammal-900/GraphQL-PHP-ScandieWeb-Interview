@@ -4,20 +4,12 @@ declare(strict_types=1);
 
 namespace Api\Server\Resolvers;
 
-use Api\Server\Config\Database;
+use Api\Server\Models\OrdersModel;
 
-class CreateOrders
+class CreateOrders extends OrdersModel
 {
-    protected Database $database;
-    protected \PDO $connection;
-    
-    public function __construct()
-    {
-        $this->database = Database::getInstance();
-        $this->connection = $this->database->getConnection();
-    }
 
-    public function create($items): string
+    public function createOrders($items): string
     {
         for ($i = 0; $i < count($items['items']); $i++) {
             $type = $items['items'][$i]['type'];
@@ -27,8 +19,8 @@ class CreateOrders
             $values = array_values($items['items'][$i]);
             $placeholders = array_fill(0, count($keys), '?');
 
-            $type = preg_replace('/[^a-zA-Z0-9_]/', '',  $type);
-            $table = $type."orders";
+            $type = preg_replace('/[^a-zA-Z0-9_]/', '', $type);
+            $table = $type . "orders";
 
             $safeKeys = array_map(function ($key): string {
                 return preg_replace('/[^a-zA-Z0-9_]/', '', $key);
