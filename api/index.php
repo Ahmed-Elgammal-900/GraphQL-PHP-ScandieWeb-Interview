@@ -10,7 +10,6 @@ $request = ServerRequest::fromGlobals();
 $httpMethod = $request->getMethod();
 $uri = $request->getUri()->getPath();
 
-
 $dispatcher = FastRoute\simpleDispatcher(function (RouteCollector $r): void {
     $r->post('/graphql', [GraphQLHandler::class, 'handle']);
     $r->addRoute('OPTIONS', '/graphql', [GraphQLHandler::class, 'handle']);
