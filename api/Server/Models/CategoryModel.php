@@ -19,4 +19,3 @@ abstract class CategoryModel
 
     abstract public function getType();
 }
-

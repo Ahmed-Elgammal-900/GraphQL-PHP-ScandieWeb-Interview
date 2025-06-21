@@ -24,4 +24,3 @@ abstract class AttributesModel
     abstract public function getAttribute();
     abstract public function getAllItems();
 }
-

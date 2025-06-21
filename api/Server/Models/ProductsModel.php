@@ -24,4 +24,3 @@ abstract class ProductsModel
     abstract public function getCurrency();
     abstract public function getPrice();
 }
-
