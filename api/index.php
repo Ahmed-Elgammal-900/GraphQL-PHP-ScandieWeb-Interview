@@ -2,9 +2,9 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Api\Utils\{GraphQLHandler, Container};
+use Api\Utils\{Container, GraphQLHandler};
+use FastRoute\{Dispatcher, RouteCollector};
 use GuzzleHttp\Psr7\ServerRequest;
-use FastRoute\{RouteCollector, Dispatcher};
 
 $request = ServerRequest::fromGlobals();
 $httpMethod = $request->getMethod();
