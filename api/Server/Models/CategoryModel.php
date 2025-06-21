@@ -10,7 +10,7 @@ abstract class CategoryModel
 {
     protected Database $database;
     protected \PDO $connection;
-    
+
     public function __construct()
     {
         $this->database = Database::getInstance();
