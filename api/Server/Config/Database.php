@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Api\Server\Config;
 
-use Api\Server\Config\Config;
 use PDO;
 use PDOException;
 
