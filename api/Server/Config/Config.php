@@ -12,6 +12,7 @@ class Config
     private static ?string $dbPass = null;
     private static ?int $dbPort = null;
     private static ?string $caKey = null;
+    private static ?string $caPath = null;
 
     public static function initialize(): void
     {
@@ -22,6 +23,7 @@ class Config
             self::$dbPass = $_ENV['DB_PASS'];
             self::$dbPort = (int) $_ENV['DB_PORT'];
             self::$caKey = $_ENV['CA_KEY'];
+            self::$caPath = $_ENV['CA_PATH'];
         }
     }
 
@@ -52,9 +54,8 @@ class Config
 
     public static function getCA(): string
     {
-        $path = "/tmp/ca-cert.pem";
         $decodedKey = base64_decode(self::$caKey);
-        file_put_contents($path, $decodedKey);
-        return $path;
+        file_put_contents(self::$caPath, $decodedKey);
+        return self::$caPath;
     }
 }
