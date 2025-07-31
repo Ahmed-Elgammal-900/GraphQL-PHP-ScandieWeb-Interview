@@ -79,7 +79,7 @@ class CreateOrders extends OrdersModel
             $stmt1 = $this->connection->prepare($sqlAttrValues);
             $stmt1->bindValue(":id", $orderData['id'], PDO::PARAM_STR);
             $stmt1->execute();
-            $attributesValues = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            $attributesValues = $stmt1->fetchAll(PDO::FETCH_COLUMN);
 
             $sqlPrice = "SELECT amount from products where id = :id";
             $stmt3 = $this->connection->prepare($sqlPrice);
@@ -135,7 +135,6 @@ class CreateOrders extends OrdersModel
 
         foreach ($orderItem as $key => $value) {
             if (is_array($value)) {
-                // Recurse into nested array and merge result
                 $result += $this->flattenAssoc($value);
             } else {
                 $result[$key] = $value;
