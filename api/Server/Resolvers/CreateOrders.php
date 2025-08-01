@@ -78,7 +78,7 @@ class CreateOrders extends OrdersModel
             }
 
 
-            $sql2 = "SELECT type, GROUP_CONCAT(value) as attribute_values FROM productsattr WHERE productid = :id GROUP BY type";
+            $sql2 = "SELECT type, GROUP_CONCAT(`value`) as attribute_values FROM productsattr WHERE productid = :id GROUP BY `type`";
 
             $stmt2 = $this->connection->prepare($sql2);
             $stmt2->bindValue(":id", $productId, PDO::PARAM_STR);
@@ -193,12 +193,14 @@ class CreateOrders extends OrdersModel
         $result = [];
 
         foreach ($orderItem as $key => $value) {
-            if (is_array($value)) {
-                foreach ($this->flattenAssoc($value) as $subKey => $subValue) {
-                    $result[$subKey] = $subValue;
+            if ($key === 'selectedOptions') {
+                if (is_array($value)) {
+                    foreach ($value as $optionKey => $optionValue) {
+                        $result[$optionKey] = $optionValue;
+                    }
+                } else {
+                    $result[$key] = $value;
                 }
-            } else {
-                $result[$key] = $value;
             }
         }
 
