@@ -17,7 +17,7 @@ abstract class OrdersModel
         $this->connection = $this->database->getConnection();
     }
 
-    abstract public function processOrders(array $items);
+    abstract public function processOrders(array $order);
     abstract protected function processOrder(array $orderItem);
     abstract protected function validateOrderData(array $orderData);
     abstract protected function validateOrderType(string $type);

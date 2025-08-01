@@ -116,6 +116,8 @@ class CreateOrders extends OrdersModel
 
         if (!empty($attributesFields)) {
             if (!empty(array_diff(array_keys($orderData['selectedOptions']), $attributesFields)) || !empty(array_diff(array_values($orderData['selectedOptions']), $attributesValues))) {
+                print_r(array_diff(array_keys($orderData['selectedOptions']), $attributesFields));
+                print_r(array_diff(array_keys($orderData['selectedOptions']), $attributesFields));
                 throw new InvalidArgumentException("Invalid Selections");
             }
         }
@@ -171,16 +173,16 @@ class CreateOrders extends OrdersModel
 
     }
 
-    public function processOrders(array $items): string
+    public function processOrders(array $order): string
     {
-        $this->validateOrderData($items);
+        $this->validateOrderData($order);
         $orderID = 'ORD-' . strtoupper(bin2hex(random_bytes(16)));
 
 
         $this->connection->beginTransaction();
 
         try {
-            foreach ($items['items'] as $orderItem) {
+            foreach ($order['items'] as $orderItem) {
                 $orderItem['orderID'] = $orderID;
                 $this->processOrder($orderItem);
             }
