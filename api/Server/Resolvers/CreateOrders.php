@@ -40,7 +40,7 @@ class CreateOrders extends OrdersModel
     protected function validateOrderData(array $orderData)
     {
         if (!isset($orderData['items']) || !is_array($orderData['items'])) {
-            print_r($orderData['items']);
+            print_r($orderData);
             throw new InvalidArgumentException('Order data must contain an "items" array');
         }
 
