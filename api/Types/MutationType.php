@@ -20,7 +20,7 @@ final class MutationType extends ObjectType
                     'args' => [
                         'items' => Type::listOf($inputType)
                     ],
-                    'resolve' => function ($root, $args): string {
+                    'resolve' => function ($root, $args): mixed {
                         $Orders = new CreateOrders();
                         return $Orders->processOrders($args);
                     }
