@@ -8,9 +8,12 @@ use Api\Server\Models\OrdersModel;
 use InvalidArgumentException;
 use PDO;
 use PDOException;
+use Exception;
 
 class CreateOrders extends OrdersModel
 {
+    private array $categoryCache = [];
+    private array $productCache = [];
 
     protected function sanitizeOrderData(array $orderItem): void
     {
@@ -23,13 +26,16 @@ class CreateOrders extends OrdersModel
 
     protected function validateOrderType(string $type): void
     {
-        try {
-            $sql = "SELECT DISTINCT category from products";
-            $stmt = $this->connection->prepare($sql);
-            $stmt->execute();
-            $categories = $stmt->fetchAll(PDO::FETCH_COLUMN);
-        } catch (PDOException $e) {
-            echo $e->getMessage();
+        if (empty($this->categoryCache)) {
+
+            try {
+                $sql = "SELECT DISTINCT category from products";
+                $stmt = $this->connection->prepare($sql);
+                $stmt->execute();
+                $categories = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            } catch (PDOException $e) {
+                echo $e->getMessage();
+            }
         }
 
         if (!is_string($type) || !in_array(strtolower(trim($type)), array_map('strtolower', $categories), true)) {
@@ -53,6 +59,61 @@ class CreateOrders extends OrdersModel
         }
     }
 
+    protected function getProductData($productId)
+    {
+        if (isset($this->productCache[$productId])) {
+            return $this->productCache[$productId];
+        }
+
+        try {
+            $sql1 = "SELECT instock, amount as price, category FROM products WHERE id = :id";
+
+            $stmt1 = $this->connection->prepare($sql1);
+            $stmt1->bindValue(":id", $productId, PDO::PARAM_STR);
+            $stmt1->execute();
+            $basicData = $stmt1->fetch(PDO::FETCH_ASSOC);
+
+            if (!$basicData) {
+                throw new InvalidArgumentException("Product not found: {$productId}");
+            }
+
+
+            $sql2 = "SELECT type, GROUP_CONCAT(value) as attribute_values FROM productsattr WHERE productid = :id GROUP BY type";
+
+            $stmt2 = $this->connection->prepare($sql2);
+            $stmt2->bindValue(":id", $productId, PDO::PARAM_STR);
+            $stmt2->execute();
+            $attributeRows = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new Exception("Database error: " . $e->getMessage());
+
+        }
+
+        $attributes = [];
+        $allAttributeTypes = [];
+        $allAttributeValues = [];
+
+        foreach ($attributeRows as $row) {
+            $values = explode(',', $row['attribute_values']);
+            $attributes[$row['type']] = $values;
+            $allAttributeTypes[] = $row['type'];
+            $allAttributeValues = array_merge($allAttributeValues, $values);
+        }
+
+        $productData = [
+            'instock' => $basicData['instock'],
+            'price' => (float) $basicData['price'],
+            'category' => $basicData['category'],
+            'attributes' => $attributes,
+            'attribute_types' => $allAttributeTypes,
+            'attribute_values' => $allAttributeValues
+        ];
+
+        $this->productCache[$productId] = $productData;
+        return $productData;
+
+    }
+
     protected function validateRequiredFields(array $orderData)
     {
         if (!is_string($orderData['id']) || !isset($orderData['id'])) {
@@ -63,69 +124,63 @@ class CreateOrders extends OrdersModel
             throw new InvalidArgumentException("Invalid count");
         }
 
-        try {
-            $sqlInstock = "SELECT instock from products where id = :id";
-            $stmt2 = $this->connection->prepare($sqlInstock);
-            $stmt2->bindValue(":id", $orderData['id'], PDO::PARAM_STR);
-            $stmt2->execute();
-            $instock = $stmt2->fetch(PDO::FETCH_COLUMN);
+        $productData = $this->getProductData($orderData['id']);
 
-            $sqlAttr = "SELECT DISTINCT `type` from productsattr where productid = :id";
-            $stmt = $this->connection->prepare($sqlAttr);
-            $stmt->bindValue(":id", $orderData['id'], PDO::PARAM_STR);
-            $stmt->execute();
-            $attributesFields = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-            $sqlAttrValues = "SELECT `value` from productsattr where productid = :id";
-            $stmt1 = $this->connection->prepare($sqlAttrValues);
-            $stmt1->bindValue(":id", $orderData['id'], PDO::PARAM_STR);
-            $stmt1->execute();
-            $attributesValues = $stmt1->fetchAll(PDO::FETCH_COLUMN);
-
-            $sqlPrice = "SELECT amount from products where id = :id";
-            $stmt3 = $this->connection->prepare($sqlPrice);
-            $stmt3->bindValue(":id", $orderData['id'], PDO::PARAM_STR);
-            $stmt3->execute();
-            $price = $stmt3->fetch(PDO::FETCH_COLUMN);
-
-            $sqlCategory = "SELECT category from products where id = :id";
-            $stmt4 = $this->connection->prepare($sqlCategory);
-            $stmt4->bindValue(":id", $orderData['id'], PDO::PARAM_STR);
-            $stmt4->execute();
-            $category = $stmt4->fetch(PDO::FETCH_COLUMN);
-
-
-
-        } catch (PDOException $e) {
-            echo $e->getMessage();
-        }
-
-        if ($instock !== "true") {
+        if ($productData['instock'] !== "true") {
             throw new InvalidArgumentException("Product Not available");
         }
 
-        if ($price !== $orderData['price']) {
+        if ($productData['price'] !== $orderData['price']) {
             throw new InvalidArgumentException("Invalid Price");
         }
 
         $orderData['price'] *= $orderData['count'];
 
-        if ($category !== $orderData['type']) {
+        if ($productData['category'] !== $orderData['type']) {
             throw new InvalidArgumentException("Invalid Category");
         }
 
-        if (!empty($attributesFields)) {
-            $orderData['selectedOptions'] = json_decode($orderData['selectedOptions'], true);
-            if (!empty(array_diff(array_keys($orderData['selectedOptions']), $attributesFields)) || !empty(array_diff(array_values($orderData['selectedOptions']), $attributesValues))) {
-                throw new InvalidArgumentException("Invalid Selections");
+        if (!empty($productData['attribute_types'])) {
+            if (!isset($orderData['selectedOptions'])) {
+                throw new InvalidArgumentException("Selected options required for product: {$orderData['id']}");
             }
-        }else{
+
+            $selectedOptions = is_string($orderData['selectedOptions'])
+                ? json_decode($orderData['selectedOptions'], true)
+                : $orderData['selectedOptions'];
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new InvalidArgumentException("Invalid JSON in selectedOptions: " . json_last_error_msg());
+            }
+
+            if (!is_array($selectedOptions)) {
+                throw new InvalidArgumentException("selectedOptions must be an array");
+            }
+
+            foreach ($productData['attributes'] as $requiredType => $values) {
+                if (!isset($selectedOptions[$requiredType])) {
+                    throw new InvalidArgumentException("Missing required attribute: {$requiredType}");
+                }
+            }
+
+            foreach ($selectedOptions as $attributeType => $selectedValue) {
+                if (!array_key_exists($attributeType, $productData['attributes'])) {
+                    throw new InvalidArgumentException("Invalid attribute type '{$attributeType}' for product: {$orderData['id']}");
+                }
+
+                $validValues = $productData['attributes'][$attributeType];
+                if (!in_array($selectedValue, $validValues, true)) {
+                    throw new InvalidArgumentException(
+                        "Invalid value '{$selectedValue}' for attribute '{$attributeType}'. " . "Valid values are: "
+                    );
+                }
+            }
+
+        } else {
             unset($orderData['selectedOptions']);
         }
 
-        $orderData = $this->flattenAssoc($orderData);
-
-        return $orderData;
+        return $this->flattenAssoc($orderData);
     }
 
     protected function escapeIdentifier(string $identifier): string
@@ -133,13 +188,15 @@ class CreateOrders extends OrdersModel
         return '`' . str_replace('`', '``', $identifier) . '`';
     }
 
-    protected function flattenAssoc(array $orderItem)
+    protected function flattenAssoc(array $orderItem): array
     {
         $result = [];
 
         foreach ($orderItem as $key => $value) {
             if (is_array($value)) {
-                $result += $this->flattenAssoc($value);
+                foreach ($this->flattenAssoc($value) as $subKey => $subValue) {
+                    $result[$subKey] = $subValue;
+                }
             } else {
                 $result[$key] = $value;
             }
@@ -147,6 +204,7 @@ class CreateOrders extends OrdersModel
 
         return $result;
     }
+
 
     protected function processOrder($orderItem)
     {
