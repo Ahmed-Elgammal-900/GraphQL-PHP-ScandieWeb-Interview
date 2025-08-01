@@ -116,6 +116,8 @@ class CreateOrders extends OrdersModel
 
         if (!empty($attributesFields)) {
             if (!empty(array_diff(array_keys($orderData['selectedOptions']), $attributesFields)) || !empty(array_diff(array_values($orderData['selectedOptions']), $attributesValues))) {
+                print_r($attributesFields);
+                print_r($attributesValues);
                 throw new InvalidArgumentException("Invalid Selections");
             }
         }
