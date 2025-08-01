@@ -46,6 +46,6 @@ switch ($routeInfo[0]) {
             }
         }
 
-         print_r($response->getBody());
+        echo var_dump($response->getBody());
         break;
 }
