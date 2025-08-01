@@ -10,6 +10,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 use GraphQL\GraphQL;
 use GraphQL\Type\Schema;
 use Api\Types\{QueryType, MutationType};
+use GraphQL\Error\DebugFlag;
+
 
 class GraphQLHandler implements RequestHandlerInterface
 {
@@ -94,7 +96,7 @@ class GraphQLHandler implements RequestHandlerInterface
                 $variables
             );
 
-            return $result->toArray();
+            return $result->toArray(DebugFlag::INCLUDE_DEBUG_MESSAGE | DebugFlag::INCLUDE_TRACE);
         } catch (\Exception $e) {
             return [
                 'errors' => [
