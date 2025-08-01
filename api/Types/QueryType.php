@@ -24,11 +24,26 @@ final class QueryType extends ObjectType
                 ],
                 'products' => [
                     'type' => Type::listOf($productType),
+                    'args' => [
+                        'category' => Type::string()
+                    ],
                     'resolve' => function ($root, $args): mixed {
                         $all = new GetProduct();
-                        return $all->getProduct();
+                        return $all->getProduct($args['category']);
                     }
                 ],
+
+                'product' => [
+                    'type' => $productType,
+                    'args' => [
+                        'id' => Type::string()
+                    ],
+                    'resolve' => function ($root, $args) {
+                        $product = new GetProduct($args['id']);
+                        return $product->getByID();
+                    }
+                ]
+
             ]
         ];
         parent::__construct($config);

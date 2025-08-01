@@ -19,7 +19,7 @@ abstract class ProductsModel
         $this->productId = $productId;
     }
 
-    abstract public function getProduct();
+    abstract public function getProduct(string $category);
     abstract public function getGallery();
     abstract public function getCurrency();
     abstract public function getPrice();

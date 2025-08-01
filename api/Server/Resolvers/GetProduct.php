@@ -9,10 +9,20 @@ use PDO;
 
 class GetProduct extends ProductsModel
 {
-    public function getProduct(): mixed
+    public function getByID(): mixed
     {
-        $sql = "SELECT * FROM products ORDER BY category";
+        $sql = "SELECT id, `name`, instock, `description`, category, brand from products where id = :id";
         $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue(":id", $this->productId, PDO::PARAM_STR);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    public function getProduct(string $category = "all"): mixed
+    {
+        $sql = "SELECT * FROM products where category = :category or :category = 'all' ORDER BY category";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue(":category", $category, PDO::PARAM_STR);
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $result;
@@ -25,7 +35,7 @@ class GetProduct extends ProductsModel
         $stmt->bindValue(":productid", $this->productId, PDO::PARAM_STR);
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
+
         $images = [];
         for ($i = 0; $i < count($result); $i++) {
             $images[] = $result[$i]['gallery'];
