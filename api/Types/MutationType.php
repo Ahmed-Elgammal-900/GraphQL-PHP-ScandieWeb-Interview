@@ -22,7 +22,7 @@ final class MutationType extends ObjectType
                     ],
                     'resolve' => function ($root, $args): mixed {
                         $Orders = new CreateOrders();
-                        return $Orders->processOrders($args);
+                        return $args;
                     }
                 ]
             ]
