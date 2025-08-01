@@ -119,6 +119,8 @@ class CreateOrders extends OrdersModel
             if (!empty(array_diff(array_keys($orderData['selectedOptions']), $attributesFields)) || !empty(array_diff(array_values($orderData['selectedOptions']), $attributesValues))) {
                 throw new InvalidArgumentException("Invalid Selections");
             }
+        }else{
+            unset($orderData['selectedOptions']);
         }
 
         $orderData = $this->flattenAssoc($orderData);
