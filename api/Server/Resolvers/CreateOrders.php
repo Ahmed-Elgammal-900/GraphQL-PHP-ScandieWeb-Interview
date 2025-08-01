@@ -145,25 +145,23 @@ class CreateOrders extends OrdersModel
                 throw new InvalidArgumentException("Selected options required for product: {$orderData['id']}");
             }
 
-            $selectedOptions = is_string($orderData['selectedOptions'])
-                ? json_decode($orderData['selectedOptions'], true)
-                : $orderData['selectedOptions'];
+            $orderData['selectedOptions'] = json_decode($orderData['selectedOptions'], true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
                 throw new InvalidArgumentException("Invalid JSON in selectedOptions: " . json_last_error_msg());
             }
 
-            if (!is_array($selectedOptions)) {
+            if (!is_array($orderData)) {
                 throw new InvalidArgumentException("selectedOptions must be an array");
             }
 
             foreach ($productData['attributes'] as $requiredType => $values) {
-                if (!isset($selectedOptions[$requiredType])) {
+                if (!isset($orderData['selectedOptions'][$requiredType])) {
                     throw new InvalidArgumentException("Missing required attribute: {$requiredType}");
                 }
             }
 
-            foreach ($selectedOptions as $attributeType => $selectedValue) {
+            foreach ($orderData['selectedOptions'] as $attributeType => $selectedValue) {
                 if (!array_key_exists($attributeType, $productData['attributes'])) {
                     throw new InvalidArgumentException("Invalid attribute type '{$attributeType}' for product: {$orderData['id']}");
                 }
@@ -212,7 +210,6 @@ class CreateOrders extends OrdersModel
         $this->validateOrderType($orderItem['type']);
 
         $data = $this->validateRequiredFields($orderItem);
-        print_r($data);
         $tableName = $data['type'] . "orders";
         unset($data['type']);
 
