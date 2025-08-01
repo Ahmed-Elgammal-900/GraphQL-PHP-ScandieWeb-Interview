@@ -172,7 +172,7 @@ class CreateOrders extends OrdersModel
 
     public function processOrders(array $order): string
     {
-        $this->validateOrderData($order);
+        return $this->validateOrderData($order);
         $orderID = 'ORD-' . strtoupper(bin2hex(random_bytes(16)));
 
 
@@ -190,6 +190,6 @@ class CreateOrders extends OrdersModel
 
         }
 
-        return 'Your Orders Have been received';
+        // return 'Your Orders Have been received';
     }
 }
