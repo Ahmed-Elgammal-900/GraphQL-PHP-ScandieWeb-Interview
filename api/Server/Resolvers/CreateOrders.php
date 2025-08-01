@@ -193,14 +193,12 @@ class CreateOrders extends OrdersModel
         $result = [];
 
         foreach ($orderItem as $key => $value) {
-            if ($key === 'selectedOptions') {
-                if (is_array($value)) {
-                    foreach ($value as $optionKey => $optionValue) {
-                        $result[$optionKey] = $optionValue;
-                    }
-                } else {
-                    $result[$key] = $value;
+            if (is_array($value)) {
+                foreach ($value as $optionKey => $optionValue) {
+                    $result[$optionKey] = $optionValue;
                 }
+            } else {
+                $result[$key] = $value;
             }
         }
 
