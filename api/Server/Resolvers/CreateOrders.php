@@ -215,8 +215,8 @@ class CreateOrders extends OrdersModel
 
         $data = $this->validateRequiredFields($orderItem);
 
-        $tableName = $data['type'] . "orders";
-        unset($data['type']);
+        $tableName = $data['category'] . "orders";
+        unset($data['category']);
 
         $fields = array_keys($data);
         $placeholders = array_fill(0, count($fields), '?');
