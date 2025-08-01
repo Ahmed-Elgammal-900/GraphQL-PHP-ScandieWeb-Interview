@@ -172,7 +172,7 @@ class CreateOrders extends OrdersModel
 
     public function processOrders(array $order): string
     {
-        return $this->validateOrderData($order);
+        return $order;
         $orderID = 'ORD-' . strtoupper(bin2hex(random_bytes(16)));
 
 
