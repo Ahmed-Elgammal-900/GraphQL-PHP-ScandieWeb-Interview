@@ -170,16 +170,16 @@ class CreateOrders extends OrdersModel
 
     }
 
-    public function processOrders(array $order): string
+    public function processOrders(array $items): string
     {
-        $this->validateOrderData($order);
+        $this->validateOrderData($items);
         $orderID = 'ORD-' . strtoupper(bin2hex(random_bytes(16)));
 
 
         $this->connection->beginTransaction();
 
         try {
-            foreach ($order['items'] as $orderItem) {
+            foreach ($items['items'] as $orderItem) {
                 $orderItem['orderID'] = $orderID;
                 $this->processOrder($orderItem);
             }
