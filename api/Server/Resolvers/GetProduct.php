@@ -18,11 +18,12 @@ class GetProduct extends ProductsModel
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result;
     }
-    public function getProduct(string $category = "all"): mixed
+    public function getProduct(string $category): mixed
     {
-        $sql = "SELECT * FROM products where category = :category or :category = 'all' ORDER BY category";
+        $sql = "SELECT * FROM products where category = :category or :category_all = 'all' ORDER BY category";
         $stmt = $this->connection->prepare($sql);
         $stmt->bindValue(":category", $category, PDO::PARAM_STR);
+        $stmt->bindValue(":category_all", $category, PDO::PARAM_STR);
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $result;
