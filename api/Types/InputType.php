@@ -17,7 +17,7 @@ final class InputType extends InputObjectType
                 'count' => Type::nonNull(Type::int()),
                 'price' => Type::nonNull(Type::float()),
                 'type' => Type::nonNull(Type::string()),
-                'selectedOptions' => Type::listOf(Type::string()),
+                'selectedOptions' => Type::string(),
             ]
         ];
         parent::__construct($config);
