@@ -115,7 +115,7 @@ class CreateOrders extends OrdersModel
         }
 
         if (!empty($attributesFields)) {
-            $orderData['selectedOptions'] = json_decode($orderData['selectedOptions']);
+            $orderData['selectedOptions'] = json_decode($orderData['selectedOptions'], true);
             if (!empty(array_diff(array_keys($orderData['selectedOptions']), $attributesFields)) || !empty(array_diff(array_values($orderData['selectedOptions']), $attributesValues))) {
                 throw new InvalidArgumentException("Invalid Selections");
             }
