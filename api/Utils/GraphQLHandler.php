@@ -40,16 +40,16 @@ class GraphQLHandler implements RequestHandlerInterface
             return $this->createPreflightResponse();
         }
 
-        // try {
+        try {
             $input = $this->parseInput($request);
             $result = $this->executeQuery($input['query'], $input['variables'] ?? null);
 
             return $this->createResponse(200, $result);
-        // } catch (\Throwable $e) {
-        //     return $this->createResponse(500, [
-        //         'errors' => [['message' => $e->getMessage()]],
-        //     ]);
-        // }
+        } catch (\Throwable $e) {
+            return $this->createResponse(500, [
+                'errors' => [['message' => $e->getMessage()]],
+            ]);
+        }
     }
 
     private function createPreflightResponse(): ResponseInterface
@@ -85,7 +85,7 @@ class GraphQLHandler implements RequestHandlerInterface
 
     private function executeQuery(string $query, ?array $variables = null): array
     {
-        // try {
+        try {
             $result = GraphQL::executeQuery(
                 $this->schema,
                 $query,
@@ -95,15 +95,15 @@ class GraphQLHandler implements RequestHandlerInterface
             );
 
             return $result->toArray();
-        // } catch (\Exception $e) {
-        //     return [
-        //         'errors' => [
-        //             [
-        //                 'message' => $e->getMessage(),
-        //             ],
-        //         ],
-        //     ];
-        // }
+        } catch (\Exception $e) {
+            return [
+                'errors' => [
+                    [
+                        'message' => $e->getMessage(),
+                    ],
+                ],
+            ];
+        }
     }
 
     private function createResponse(int $status, array $data): ResponseInterface
