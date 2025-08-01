@@ -170,7 +170,7 @@ class CreateOrders extends OrdersModel
 
     }
 
-    public function processOrders(array $order): string
+    public function processOrders(array $order): mixed
     {
         return $order;
         $orderID = 'ORD-' . strtoupper(bin2hex(random_bytes(16)));
