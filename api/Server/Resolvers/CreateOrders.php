@@ -32,13 +32,13 @@ class CreateOrders extends OrdersModel
                 $sql = "SELECT DISTINCT category from products";
                 $stmt = $this->connection->prepare($sql);
                 $stmt->execute();
-                $categories = $stmt->fetchAll(PDO::FETCH_COLUMN);
+                $this->categoryCache = $stmt->fetchAll(PDO::FETCH_COLUMN);
             } catch (PDOException $e) {
                 echo $e->getMessage();
             }
         }
 
-        if (!is_string($type) || !in_array(strtolower(trim($type)), array_map('strtolower', $categories), true)) {
+        if (!is_string($type) || !in_array(strtolower(trim($type)), array_map('strtolower', $this->categoryCache), true)) {
             throw new InvalidArgumentException("Invalid category");
         }
     }
@@ -114,30 +114,45 @@ class CreateOrders extends OrdersModel
 
     }
 
-    protected function validateRequiredFields(array $orderData)
+    protected function validateRequiredFields(array $orderData): array
     {
-        if (!is_string($orderData['id']) || !isset($orderData['id'])) {
+
+        if (!isset($orderData['id']) || !is_string($orderData['id']) || empty(trim($orderData['id']))) {
             throw new InvalidArgumentException("Invalid Product id");
         }
 
-        if (!is_int($orderData['count']) || !($orderData['count'] > 0)) {
+
+        if (!isset($orderData['count']) || !is_int($orderData['count']) || (int) $orderData['count'] <= 0) {
             throw new InvalidArgumentException("Invalid count");
+        }
+
+
+        if (!isset($orderData['price']) || !is_float($orderData['price']) || (float) $orderData['price'] <= 0) {
+            throw new InvalidArgumentException("Invalid price");
+        }
+
+
+        if (!isset($orderData['type']) || !is_string($orderData['type']) || empty(trim($orderData['type']))) {
+            throw new InvalidArgumentException("Invalid product type");
         }
 
         $productData = $this->getProductData($orderData['id']);
 
+
         if ($productData['instock'] !== "true") {
-            throw new InvalidArgumentException("Product Not available");
+            throw new InvalidArgumentException("Product not available: {$orderData['id']}");
         }
 
-        if ($productData['price'] !== $orderData['price']) {
-            throw new InvalidArgumentException("Invalid Price");
+        if ($orderData['price'] !== $productData['price']) {
+            throw new InvalidArgumentException(
+                "Incorrect price"
+            );
         }
-
-        $orderData['price'] *= $orderData['count'];
 
         if ($productData['category'] !== $orderData['type']) {
-            throw new InvalidArgumentException("Invalid Category");
+            throw new InvalidArgumentException(
+                "Invalid category. Expected: {$productData['category']}, provided: {$orderData['type']}"
+            );
         }
 
         if (!empty($productData['attribute_types'])) {
@@ -145,23 +160,28 @@ class CreateOrders extends OrdersModel
                 throw new InvalidArgumentException("Selected options required for product: {$orderData['id']}");
             }
 
-            $orderData['selectedOptions'] = json_decode($orderData['selectedOptions'], true);
+            if (is_string($orderData['selectedOptions'])) {
+                $selectedOptions = json_decode($orderData['selectedOptions'], true);
 
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new InvalidArgumentException("Invalid JSON in selectedOptions: " . json_last_error_msg());
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    throw new InvalidArgumentException("Invalid JSON in selectedOptions: " . json_last_error_msg());
+                }
+            } else {
+                throw new InvalidArgumentException("Invalid selected options");
             }
 
-            if (!is_array($orderData)) {
+
+            if (!is_array($selectedOptions)) {
                 throw new InvalidArgumentException("selectedOptions must be an array");
             }
 
-            foreach ($productData['attributes'] as $requiredType => $values) {
-                if (!isset($orderData['selectedOptions'][$requiredType])) {
+            foreach ($productData['attributes'] as $requiredType => $validValues) {
+                if (!isset($selectedOptions[$requiredType])) {
                     throw new InvalidArgumentException("Missing required attribute: {$requiredType}");
                 }
             }
 
-            foreach ($orderData['selectedOptions'] as $attributeType => $selectedValue) {
+            foreach ($selectedOptions as $attributeType => $selectedValue) {
                 if (!array_key_exists($attributeType, $productData['attributes'])) {
                     throw new InvalidArgumentException("Invalid attribute type '{$attributeType}' for product: {$orderData['id']}");
                 }
@@ -169,16 +189,22 @@ class CreateOrders extends OrdersModel
                 $validValues = $productData['attributes'][$attributeType];
                 if (!in_array($selectedValue, $validValues, true)) {
                     throw new InvalidArgumentException(
-                        "Invalid value '{$selectedValue}' for attribute '{$attributeType}'. " . "Valid values are: "
+                        "Invalid value '{$selectedValue}' for attribute '{$attributeType}'. Valid values are: " .
+                        implode(', ', $validValues)
                     );
                 }
             }
 
+            $cleanData = $orderData;
+            $cleanData['selectedOptions'] = $selectedOptions;
         } else {
-            unset($orderData['selectedOptions']);
+            $cleanData = $orderData;
+            unset($cleanData['selectedOptions']);
         }
 
-        return $this->flattenAssoc($orderData);
+        $cleanData['totalPrice'] = (float) $cleanData['price'] * (int) $cleanData['count'];
+
+        return $this->flattenAssoc($cleanData);
     }
 
     protected function escapeIdentifier(string $identifier): string
