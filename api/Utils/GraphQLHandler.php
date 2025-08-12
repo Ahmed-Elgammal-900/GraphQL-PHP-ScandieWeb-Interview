@@ -46,15 +46,11 @@ class GraphQLHandler implements RequestHandlerInterface
             $input = $this->parseInput($request);
             $result = $this->executeQuery($input['query'], $input['variables'] ?? null);
 
+            if (isset($result['errors']) && !empty($result['errors'])) {
+                return $this->createResponse(422, $result);
+            }
             return $this->createResponse(200, $result);
-        } catch (\DomainException $e) {
-            return $this->createResponse(409, [
-                'errors' => [['message' => $e->getMessage()]],
-            ]);
-        } catch (\InvalidArgumentException $e) {
-            return $this->createResponse(400, [
-                'errors' => [['message' => $e->getMessage()]],
-            ]);
+
         } catch (\Throwable $e) {
             return $this->createResponse(500, [
                 'errors' => [['message' => $e->getMessage()]],
