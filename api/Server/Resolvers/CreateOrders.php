@@ -203,7 +203,7 @@ class CreateOrders extends OrdersModel
             unset($cleanData['selectedOptions']);
         }
 
-        $cleanData['totalPrice'] = (float) $cleanData['price'] * (int) $cleanData['count'];
+        $cleanData['price'] = (float) $cleanData['price'] * (int) $cleanData['count'];
 
         return $this->flattenAssoc($cleanData);
     }
