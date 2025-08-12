@@ -47,6 +47,14 @@ class GraphQLHandler implements RequestHandlerInterface
             $result = $this->executeQuery($input['query'], $input['variables'] ?? null);
 
             return $this->createResponse(200, $result);
+        } catch (\DomainException $e) {
+            return $this->createResponse(409, [
+                'errors' => [['message' => $e->getMessage()]],
+            ]);
+        } catch (\InvalidArgumentException $e) {
+            return $this->createResponse(400, [
+                'errors' => [['message' => $e->getMessage()]],
+            ]);
         } catch (\Throwable $e) {
             return $this->createResponse(500, [
                 'errors' => [['message' => $e->getMessage()]],
@@ -65,7 +73,7 @@ class GraphQLHandler implements RequestHandlerInterface
             ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
             ->withHeader('Access-Control-Allow-Credentials', 'true')
             ->withHeader('Content-Length', '0');
-        
+
         return $response;
     }
 

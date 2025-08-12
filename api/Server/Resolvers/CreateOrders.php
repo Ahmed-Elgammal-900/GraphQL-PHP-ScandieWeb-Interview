@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Api\Server\Resolvers;
 
 use Api\Server\Models\OrdersModel;
+use DomainException;
 use InvalidArgumentException;
 use PDO;
 use PDOException;
@@ -46,7 +47,6 @@ class CreateOrders extends OrdersModel
     protected function validateOrderData(array $orderData)
     {
         if (!isset($orderData['items']) || !is_array($orderData['items'])) {
-            print_r($orderData);
             throw new InvalidArgumentException('Order data must contain an "items" array');
         }
 
@@ -55,7 +55,7 @@ class CreateOrders extends OrdersModel
         }
 
         if (count($orderData['items']) > 100) {
-            throw new InvalidArgumentException('Too many orders in single request (max: 100)');
+            throw new DomainException('Too many orders in single request (max: 100)');
         }
     }
 
@@ -123,12 +123,12 @@ class CreateOrders extends OrdersModel
 
 
         if (!isset($orderData['count']) || !is_int($orderData['count']) || (int) $orderData['count'] <= 0) {
-            throw new InvalidArgumentException("Invalid count");
+            throw new DomainException("Invalid count");
         }
 
 
         if (!isset($orderData['price']) || !is_float($orderData['price']) || (float) $orderData['price'] <= 0) {
-            throw new InvalidArgumentException("Invalid price");
+            throw new DomainException("Invalid price");
         }
 
 
@@ -140,17 +140,17 @@ class CreateOrders extends OrdersModel
 
 
         if ($productData['instock'] !== "true") {
-            throw new InvalidArgumentException("Product not available: {$orderData['id']}");
+            throw new DomainException("Product not available: {$orderData['id']}");
         }
 
         if ($orderData['price'] !== $productData['price']) {
-            throw new InvalidArgumentException(
+            throw new DomainException(
                 "Incorrect price"
             );
         }
 
         if ($productData['category'] !== $orderData['type']) {
-            throw new InvalidArgumentException(
+            throw new DomainException(
                 "Invalid category. Expected: {$productData['category']}, provided: {$orderData['type']}"
             );
         }
@@ -188,9 +188,10 @@ class CreateOrders extends OrdersModel
 
                 $validValues = $productData['attributes'][$attributeType];
                 if (!in_array($selectedValue, $validValues, true)) {
-                    throw new InvalidArgumentException(
+                    throw new DomainException(
                         "Invalid value '{$selectedValue}' for attribute '{$attributeType}'. Valid values are: " .
-                        implode(', ', $validValues)
+                        implode(', ', $validValues),
+
                     );
                 }
             }
