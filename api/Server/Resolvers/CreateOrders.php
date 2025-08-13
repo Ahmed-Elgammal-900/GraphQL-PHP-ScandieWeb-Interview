@@ -90,23 +90,17 @@ class CreateOrders extends OrdersModel
         }
 
         $attributes = [];
-        $allAttributeTypes = [];
-        $allAttributeValues = [];
 
         foreach ($attributeRows as $row) {
             $values = explode(',', $row['attribute_values']);
             $attributes[$row['type']] = $values;
-            $allAttributeTypes[] = $row['type'];
-            $allAttributeValues = array_merge($allAttributeValues, $values);
         }
 
         $productData = [
             'instock' => $basicData['instock'],
             'price' => (float) $basicData['price'],
             'category' => $basicData['category'],
-            'attributes' => $attributes,
-            'attribute_types' => $allAttributeTypes,
-            'attribute_values' => $allAttributeValues
+            'attributes' => $attributes
         ];
 
         $this->productCache[$productId] = $productData;
@@ -155,7 +149,7 @@ class CreateOrders extends OrdersModel
             );
         }
 
-        if (!empty($productData['attribute_types'])) {
+        if (!empty($productData['attributes'])) {
             if (!isset($orderData['selectedOptions'])) {
                 throw new InvalidArgumentException("Selected options required for product: {$orderData['id']}");
             }
