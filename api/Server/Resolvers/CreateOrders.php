@@ -74,7 +74,7 @@ class CreateOrders extends OrdersModel
             $basicData = $stmt1->fetch(PDO::FETCH_ASSOC);
 
             if (!$basicData) {
-                throw new InvalidArgumentException("Product not found: {$productId}");
+                throw new InvalidArgumentException("Product not found");
             }
 
 
@@ -166,8 +166,6 @@ class CreateOrders extends OrdersModel
                 if (json_last_error() !== JSON_ERROR_NONE) {
                     throw new InvalidArgumentException("Invalid JSON in selectedOptions: " . json_last_error_msg());
                 }
-            } else {
-                throw new InvalidArgumentException("Invalid selected options");
             }
 
 
@@ -189,9 +187,7 @@ class CreateOrders extends OrdersModel
                 $validValues = $productData['attributes'][$attributeType];
                 if (!in_array($selectedValue, $validValues, true)) {
                     throw new DomainException(
-                        "Invalid value '{$selectedValue}' for attribute '{$attributeType}'. Valid values are: " .
-                        implode(', ', $validValues),
-
+                        "Invalid value '{$selectedValue}' for attribute '{$attributeType}'."
                     );
                 }
             }
