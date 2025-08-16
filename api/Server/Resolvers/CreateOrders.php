@@ -230,7 +230,6 @@ class CreateOrders extends OrdersModel
         $this->validateOrderData($order);
         $orderID = 'ORD-' . strtoupper(bin2hex(random_bytes(16)));
 
-
         $this->connection->beginTransaction();
 
         try {
