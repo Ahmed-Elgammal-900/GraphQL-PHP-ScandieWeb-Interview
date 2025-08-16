@@ -13,7 +13,6 @@ use Exception;
 
 class CreateOrders extends OrdersModel
 {
-    private array $categoryCache = [];
     private array $productCache = [];
 
     protected function sanitizeOrderData(array $orderItem): void
@@ -22,25 +21,6 @@ class CreateOrders extends OrdersModel
             if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $key)) {
                 throw new InvalidArgumentException("Invalid field name: {$key}");
             }
-        }
-    }
-
-    protected function validateOrderType(string $type): void
-    {
-        if (empty($this->categoryCache)) {
-
-            try {
-                $sql = "SELECT DISTINCT category from products";
-                $stmt = $this->connection->prepare($sql);
-                $stmt->execute();
-                $this->categoryCache = $stmt->fetchAll(PDO::FETCH_COLUMN);
-            } catch (PDOException $e) {
-                echo $e->getMessage();
-            }
-        }
-
-        if (!is_string($type) || !in_array(strtolower(trim($type)), array_map('strtolower', $this->categoryCache), true)) {
-            throw new InvalidArgumentException("Invalid category");
         }
     }
 
@@ -224,7 +204,6 @@ class CreateOrders extends OrdersModel
     protected function processOrder($orderItem)
     {
         $this->sanitizeOrderData($orderItem);
-        $this->validateOrderType($orderItem['type']);
 
         $data = $this->validateRequiredFields($orderItem);
         $tableName = $data['type'] . "orders";

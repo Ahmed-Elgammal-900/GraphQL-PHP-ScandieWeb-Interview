@@ -19,7 +19,6 @@ abstract class OrdersModel
 
     abstract protected function processOrder(array $orderItem);
     abstract protected function validateOrderData(array $orderData);
-    abstract protected function validateOrderType(string $type);
     abstract protected function validateRequiredFields(array $orderItem);
     abstract protected function sanitizeOrderData(array $orderItem);
     abstract protected function escapeIdentifier(string $identifier);
