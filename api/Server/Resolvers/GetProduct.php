@@ -20,11 +20,9 @@ class GetProduct extends ProductsModel
     }
     public function getByCategory(string $category): mixed
     {
-        $sql = "SELECT id, `name`, instock, `description`, category, brand FROM products where category = :category or :category_all = 'all' ORDER BY category";
+        $sql = "SELECT id, `name`, instock, `description`, category, brand FROM products where category = ? or ? = 'all' ORDER BY category";
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindValue(":category", $category, PDO::PARAM_STR);
-        $stmt->bindValue(":category_all", $category, PDO::PARAM_STR);
-        $stmt->execute();
+        $stmt->execute([$category, $category]);
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
