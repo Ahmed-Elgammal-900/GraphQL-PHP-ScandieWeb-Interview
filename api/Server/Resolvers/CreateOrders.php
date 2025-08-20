@@ -107,8 +107,8 @@ class CreateOrders extends OrdersModel
         }
 
 
-        if (!isset($orderData['type']) || !is_string($orderData['type']) || empty(trim($orderData['type']))) {
-            throw new InvalidArgumentException("Invalid product type");
+        if (!isset($orderData['category']) || !is_string($orderData['category']) || empty(trim($orderData['category']))) {
+            throw new InvalidArgumentException("Invalid product category");
         }
 
         $productData = $this->getProductData($orderData['id']);
@@ -124,9 +124,9 @@ class CreateOrders extends OrdersModel
             );
         }
 
-        if ($productData['category'] !== $orderData['type']) {
+        if ($productData['category'] !== $orderData['category']) {
             throw new DomainException(
-                "Invalid category. Expected: {$productData['category']}, provided: {$orderData['type']}"
+                "Invalid category. Expected: {$productData['category']}, provided: {$orderData['category']}"
             );
         }
 
@@ -207,8 +207,8 @@ class CreateOrders extends OrdersModel
         $this->sanitizeOrderData($orderItem);
 
         $data = $this->validateRequiredFields($orderItem);
-        $tableName = $data['type'] . "orders";
-        unset($data['type']);
+        $tableName = $data['category'] . "orders";
+        unset($data['category']);
 
         $fields = array_keys($data);
         $placeholders = array_fill(0, count($fields), '?');
