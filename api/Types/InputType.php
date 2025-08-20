@@ -17,6 +17,7 @@ final class InputType extends InputObjectType
                 'count' => Type::nonNull(Type::int()),
                 'price' => Type::nonNull(Type::float()),
                 'type' => Type::nonNull(Type::string()),
+                'label' => Type::nonNull(Type::string()),
                 'selectedOptions' => Type::string(),
             ]
         ];
