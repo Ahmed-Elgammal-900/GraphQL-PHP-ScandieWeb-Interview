@@ -9,7 +9,7 @@ use PDO;
 
 class GetProduct extends ProductsModel
 {
-    public function getByID(): mixed
+    public function getById(): mixed
     {
         $sql = "SELECT id, `name`, instock, `description`, category, brand from products where id = :id";
         $stmt = $this->connection->prepare($sql);
@@ -18,7 +18,7 @@ class GetProduct extends ProductsModel
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result;
     }
-    public function getProduct(string $category): mixed
+    public function getByCategory(string $category): mixed
     {
         $sql = "SELECT id, `name`, instock, `description`, category, brand FROM products where category = :category or :category_all = 'all' ORDER BY category";
         $stmt = $this->connection->prepare($sql);

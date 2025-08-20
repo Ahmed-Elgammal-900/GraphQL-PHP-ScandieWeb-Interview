@@ -29,7 +29,7 @@ final class QueryType extends ObjectType
                     ],
                     'resolve' => function ($root, $args): mixed {
                         $all = new GetProduct();
-                        return $all->getProduct($args['category']);
+                        return $all->getByCategory($args['category']);
                     }
                 ],
 
@@ -40,7 +40,7 @@ final class QueryType extends ObjectType
                     ],
                     'resolve' => function ($root, $args) {
                         $product = new GetProduct($args['id']);
-                        return $product->getByID();
+                        return $product->getById();
                     }
                 ]
 
