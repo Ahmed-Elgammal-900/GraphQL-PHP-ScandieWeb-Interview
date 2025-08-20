@@ -46,7 +46,7 @@ class CreateOrders extends OrdersModel
         }
 
         try {
-            $sql1 = "SELECT instock, amount as price, category FROM products WHERE id = :id";
+            $sql1 = "SELECT instock, amount as price, label, category FROM products WHERE id = :id";
 
             $stmt1 = $this->connection->prepare($sql1);
             $stmt1->bindValue(":id", $productId, PDO::PARAM_STR);
@@ -79,6 +79,7 @@ class CreateOrders extends OrdersModel
         $productData = [
             'instock' => $basicData['instock'],
             'price' => (float) $basicData['price'],
+            'label' => $basicData['label'],
             'category' => $basicData['category'],
             'attributes' => $attributes
         ];
@@ -117,7 +118,7 @@ class CreateOrders extends OrdersModel
             throw new DomainException("Product not available: {$orderData['id']}");
         }
 
-        if ($orderData['price'] !== $productData['price']) {
+        if ($orderData['price'] !== $productData['price'] || $orderData['label'] !== $productData['label']) {
             throw new DomainException(
                 "Incorrect price"
             );
