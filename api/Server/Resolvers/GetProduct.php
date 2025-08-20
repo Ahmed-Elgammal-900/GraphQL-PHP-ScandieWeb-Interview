@@ -44,7 +44,7 @@ class GetProduct extends ProductsModel
 
     public function getCurrency(): mixed
     {
-        $sql = "SELECT label, sympol FROM products WHERE id = :productid";
+        $sql = "SELECT label, symbol FROM products WHERE id = :productid";
         $stmt = $this->connection->prepare($sql);
         $stmt->bindValue(":productid", $this->productId, PDO::PARAM_STR);
         $stmt->execute();

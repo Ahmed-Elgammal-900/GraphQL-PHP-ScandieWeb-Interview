@@ -14,7 +14,7 @@ final class CurrencyType extends ObjectType
             'name' => 'Currency',
             'fields' => [
                 'label' => Type::string(),
-                'sympol' => Type::string()
+                'symbol' => Type::string()
             ]
         ];
         parent::__construct($config);
