@@ -33,10 +33,6 @@ class CreateOrders extends OrdersModel
         if (empty($orderData['items'])) {
             throw new InvalidArgumentException('No order items provided');
         }
-
-        if (count($orderData['items']) > 100) {
-            throw new DomainException('Too many orders in single request (max: 100)');
-        }
     }
 
     protected function getProductData($productId)
