@@ -131,7 +131,9 @@ class CreateOrders extends OrdersModel
                 throw new InvalidArgumentException("Selected options required for product: {$orderData['id']}");
             }
 
-            if (is_string($orderData['selectedOptions'])) {
+            $selectedOptions = $orderData['selectedOptions'];
+
+            if (is_string($selectedOptions)) {
                 $selectedOptions = json_decode($orderData['selectedOptions'], true);
 
                 if (json_last_error() !== JSON_ERROR_NONE) {
@@ -170,7 +172,7 @@ class CreateOrders extends OrdersModel
             unset($cleanData['selectedOptions']);
         }
 
-        $cleanData['price'] = (float) $cleanData['price'] * (int) $cleanData['count'];
+        $cleanData['price'] *= $cleanData['count'];
 
         return $this->flattenAssoc($cleanData);
     }
