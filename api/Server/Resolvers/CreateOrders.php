@@ -93,13 +93,13 @@ class CreateOrders extends OrdersModel
         }
 
 
-        if (!isset($orderData['count']) || !is_int($orderData['count']) || (int) $orderData['count'] <= 0) {
-            throw new DomainException("Invalid count");
+        if (!isset($orderData['count']) || !is_int($orderData['count']) || $orderData['count'] <= 0) {
+            throw new InvalidArgumentException("Invalid count");
         }
 
 
-        if (!isset($orderData['price']) || !is_float($orderData['price']) || (float) $orderData['price'] <= 0) {
-            throw new DomainException("Invalid price");
+        if (!isset($orderData['price']) || !is_float($orderData['price']) || $orderData['price'] <= 0) {
+            throw new InvalidArgumentException("Invalid price");
         }
 
 
