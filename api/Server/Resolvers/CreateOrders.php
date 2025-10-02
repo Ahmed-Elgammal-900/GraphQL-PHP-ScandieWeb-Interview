@@ -49,11 +49,6 @@ class CreateOrders extends OrdersModel
             $stmt1->execute();
             $basicData = $stmt1->fetch(PDO::FETCH_ASSOC);
 
-            if (!$basicData) {
-                throw new InvalidArgumentException("Product not found");
-            }
-
-
             $sql2 = "SELECT type, GROUP_CONCAT(`value`) as attribute_values FROM productsattr WHERE productid = :id GROUP BY `type`";
 
             $stmt2 = $this->connection->prepare($sql2);
