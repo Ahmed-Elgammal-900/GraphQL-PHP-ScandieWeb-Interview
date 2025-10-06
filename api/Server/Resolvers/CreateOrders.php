@@ -8,8 +8,8 @@ use Api\Server\Models\OrdersModel;
 use DomainException;
 use InvalidArgumentException;
 use PDO;
-use PDOException;
 use Exception;
+use RuntimeException;
 
 class CreateOrders extends OrdersModel
 {
@@ -49,8 +49,8 @@ class CreateOrders extends OrdersModel
             $stmt1->execute();
             $basicData = $stmt1->fetch(PDO::FETCH_ASSOC);
 
-            if(!$basicData){
-                throw new InvalidArgumentException("Product Not found");
+            if (!$basicData) {
+                throw new RuntimeException("Product Not found");
             }
 
             $sql2 = "SELECT type, GROUP_CONCAT(`value`) as attribute_values FROM productsattr WHERE productid = :id GROUP BY `type`";
@@ -59,8 +59,8 @@ class CreateOrders extends OrdersModel
             $stmt2->bindValue(":id", $productId, PDO::PARAM_STR);
             $stmt2->execute();
             $attributeRows = $stmt2->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            throw new Exception("Database error: " . $e->getMessage());
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
 
         }
 
