@@ -197,7 +197,7 @@ class CreateOrders extends OrdersModel
 
     protected function processOrder($orderItem)
     {
-        $this->sanitizeOrderData($orderItem);
+        $this->filterOrderKeys($orderItem);
 
         $data = $this->validateRequiredFields($orderItem);
         $tableName = $data['category'] . "orders";
