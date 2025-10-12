@@ -18,6 +18,7 @@ abstract class OrdersModel
     }
 
     abstract protected function validateOrderData(array $orderData);
+    abstract protected function getProductData(string $productId);
     abstract protected function validateRequiredFields(array $orderItem);
     abstract protected function filterOrderKeys(array $orderItem);
     abstract protected function escapeIdentifier(string $identifier);

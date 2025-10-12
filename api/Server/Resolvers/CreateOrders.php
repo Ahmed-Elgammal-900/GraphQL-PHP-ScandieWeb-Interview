@@ -24,7 +24,7 @@ class CreateOrders extends OrdersModel
         }
     }
 
-    protected function validateOrderData(array $orderData)
+    protected function validateOrderData(array $orderData): void
     {
         if (!isset($orderData['items']) || !is_array($orderData['items'])) {
             throw new InvalidArgumentException('Order data must contain an "items" array');
@@ -35,7 +35,7 @@ class CreateOrders extends OrdersModel
         }
     }
 
-    protected function getProductData($productId)
+    protected function getProductData(string $productId): array
     {
         if (isset($this->productCache[$productId])) {
             return $this->productCache[$productId];
@@ -245,7 +245,7 @@ class CreateOrders extends OrdersModel
                 $allPlaceholders
             );
 
-          
+
             $values = [];
             foreach ($chunk as $item) {
                 $values = array_merge($values, array_values($item));
