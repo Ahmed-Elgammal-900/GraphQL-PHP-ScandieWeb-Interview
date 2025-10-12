@@ -274,7 +274,7 @@ class CreateOrders extends OrdersModel
             $itemsByCategory = $this->groupByCategory($validatedItems);
 
             foreach ($itemsByCategory as $category => $categoryItems) {
-                $this->batchInsertNormalized($category . "table", $categoryItems);
+                $this->batchInsertNormalized($category . "orders", $categoryItems);
             }
             $this->connection->commit();
         } catch (\Throwable $th) {
