@@ -199,7 +199,7 @@ class CreateOrders extends OrdersModel
     }
 
 
-    protected function processOrder($orderItem)
+    protected function processOrder(array $orderItem)
     {
         $this->filterOrderKeys($orderItem);
 
