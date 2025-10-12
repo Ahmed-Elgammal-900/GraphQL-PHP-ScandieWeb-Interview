@@ -17,12 +17,13 @@ abstract class OrdersModel
         $this->connection = $this->database->getConnection();
     }
 
-    abstract protected function processOrder(array $orderItem);
     abstract protected function validateOrderData(array $orderData);
     abstract protected function validateRequiredFields(array $orderItem);
     abstract protected function filterOrderKeys(array $orderItem);
     abstract protected function escapeIdentifier(string $identifier);
     abstract protected function flattenAssoc(array $orderItem);
+    abstract protected function groupByCategory(array $items);
+    abstract protected function batchInsertNormalized(string $tableName, array $items);
     abstract public function processOrders(array $order);
 
 }

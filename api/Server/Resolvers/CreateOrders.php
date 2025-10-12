@@ -197,30 +197,63 @@ class CreateOrders extends OrdersModel
 
         return $result;
     }
-
-
-    protected function processOrder(array $orderItem)
+    protected function groupByCategory(array $items): array
     {
-        $this->filterOrderKeys($orderItem);
+        $grouped = [];
 
-        $data = $this->validateRequiredFields($orderItem);
-        $tableName = $data['category'] . "orders";
-        unset($data['category']);
+        foreach ($items as $item) {
+            $category = $item['category'];
+            unset($item['category']);
 
-        $fields = array_keys($data);
-        $placeholders = array_fill(0, count($fields), '?');
+            $grouped[$category][] = $item;
+        }
 
-        $sql = sprintf(
-            "INSERT INTO %s (%s) VALUES (%s)",
-            $this->escapeIdentifier($tableName),
-            implode(', ', array_map([$this, 'escapeIdentifier'], $fields)),
-            implode(', ', $placeholders)
-        );
+        return $grouped;
+    }
 
-        $stmt = $this->connection->prepare($sql);
-        $stmt->execute(array_values($data));
+    protected function batchInsertNormalized(string $tableName, array $items): void
+    {
 
+        $allColumns = [];
+        foreach ($items as $item) {
+            $allColumns = array_merge($allColumns, array_keys($item));
+        }
+        $allColumns = array_unique($allColumns);
+        sort($allColumns);
 
+        $normalizedItems = [];
+        foreach ($items as $item) {
+            $normalized = [];
+            foreach ($allColumns as $col) {
+                $normalized[$col] = $item[$col] ?? null;
+            }
+            $normalizedItems[] = $normalized;
+        }
+
+        $chunks = array_chunk($normalizedItems, 20);
+
+        foreach ($chunks as $chunk) {
+            $columnNames = implode(', ', array_map([$this, 'escapeIdentifier'], $allColumns));
+
+            $rowPlaceholder = '(' . implode(', ', array_fill(0, count($allColumns), '?')) . ')';
+            $allPlaceholders = implode(', ', array_fill(0, count($chunk), $rowPlaceholder));
+
+            $sql = sprintf(
+                "INSERT INTO %s (%s) VALUES %s",
+                $this->escapeIdentifier($tableName),
+                $columnNames,
+                $allPlaceholders
+            );
+
+          
+            $values = [];
+            foreach ($chunk as $item) {
+                $values = array_merge($values, array_values($item));
+            }
+
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute($values);
+        }
     }
 
     public function processOrders(array $order): string
@@ -231,9 +264,17 @@ class CreateOrders extends OrdersModel
         $this->connection->beginTransaction();
 
         try {
+            $validatedItems = [];
             foreach ($order['items'] as $orderItem) {
                 $orderItem['orderID'] = $orderID;
-                $this->processOrder($orderItem);
+                $this->filterOrderKeys($orderItem);
+                $validatedItems[] = $this->validateRequiredFields($orderItem);
+            }
+
+            $itemsByCategory = $this->groupByCategory($validatedItems);
+
+            foreach ($itemsByCategory as $category => $categoryItems) {
+                $this->batchInsertNormalized($category . "table", $categoryItems);
             }
             $this->connection->commit();
         } catch (\Throwable $th) {
