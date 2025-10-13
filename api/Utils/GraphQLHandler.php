@@ -90,19 +90,15 @@ class GraphQLHandler implements RequestHandlerInterface
 
     private function executeQuery(string $query, ?array $variables = null): array
     {
-        try {
-            $result = GraphQL::executeQuery(
-                $this->schema,
-                $query,
-                null,
-                null,
-                $variables
-            );
+        $result = GraphQL::executeQuery(
+            $this->schema,
+            $query,
+            null,
+            null,
+            $variables
+        );
 
-            return $result->toArray();
-        } catch (\Exception $e) {
-            throw $e;
-        }
+        return $result->toArray();
     }
 
     private function createResponse(int $status, array $data): ResponseInterface
