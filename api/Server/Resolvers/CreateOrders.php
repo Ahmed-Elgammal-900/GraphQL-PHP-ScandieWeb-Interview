@@ -169,6 +169,8 @@ class CreateOrders extends OrdersModel
         } else {
             $cleanData = $orderData;
             unset($cleanData['selectedOptions']);
+            $cleanData['price'] *= $cleanData['count'];
+            return $cleanData;
         }
 
         $cleanData['price'] *= $cleanData['count'];
