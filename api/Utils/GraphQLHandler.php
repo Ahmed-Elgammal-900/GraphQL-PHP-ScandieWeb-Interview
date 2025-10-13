@@ -47,8 +47,7 @@ class GraphQLHandler implements RequestHandlerInterface
             return $this->createResponse(200, $result);
 
         } catch (\Throwable $e) {
-            $statusCode = $this->getHttpStatusCode($e);
-            return $this->createResponse($statusCode, [
+            return $this->createResponse(500, [
                 'errors' => [['message' => $e->getMessage()]],
             ]);
         }
@@ -83,17 +82,6 @@ class GraphQLHandler implements RequestHandlerInterface
         }
 
         return $input;
-    }
-
-    private function getHttpStatusCode(\Throwable $e): int
-    {
-        return match (true) {
-            $e instanceof \InvalidArgumentException => 400,
-            $e instanceof \DomainException => 422,
-            $e instanceof \PDOException => 500,
-            $e instanceof \RuntimeException => 500,
-            default => 500,
-        };
     }
 
     private function executeQuery(string $query, ?array $variables = null): array
