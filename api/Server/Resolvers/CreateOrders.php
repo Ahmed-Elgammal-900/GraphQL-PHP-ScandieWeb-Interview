@@ -14,6 +14,7 @@ use RuntimeException;
 class CreateOrders extends OrdersModel
 {
     private array $productCache = [];
+    private int $batchSize = 20;
 
     protected function filterOrderKeys(array $orderItem): void
     {
@@ -232,7 +233,7 @@ class CreateOrders extends OrdersModel
             $normalizedItems[] = $normalized;
         }
 
-        $chunks = array_chunk($normalizedItems, 20);
+        $chunks = array_chunk($normalizedItems, $this->batchSize);
 
         foreach ($chunks as $chunk) {
             $columnNames = implode(', ', array_map([$this, 'escapeIdentifier'], $allColumns));
@@ -260,30 +261,21 @@ class CreateOrders extends OrdersModel
 
     protected function hasLowColumnVariance(array $items): bool
     {
-        if (count($items) < 2) {
+        $totalItems = count($items);
+
+        if ($totalItems < 2) {
             return true;
         }
 
-        $allColumns = [];
         $columnCounts = [];
 
         foreach ($items as $item) {
-            $columns = array_keys($item);
-            $allColumns = array_merge($allColumns, $columns);
-
-            foreach ($columns as $col) {
+            foreach (array_keys($item) as $col) {
                 $columnCounts[$col] = ($columnCounts[$col] ?? 0) + 1;
             }
         }
 
-        $allColumns = array_unique($allColumns);
-        $totalItems = count($items);
-
-        $avgPresence = 0;
-        foreach ($columnCounts as $count) {
-            $avgPresence += $count / $totalItems;
-        }
-        $avgPresence /= count($allColumns);
+        $avgPresence = array_sum(array_map(fn($count) => $count / $totalItems, $columnCounts)) / count($columnCounts);
 
         return $avgPresence >= 0.7;
     }
@@ -312,7 +304,7 @@ class CreateOrders extends OrdersModel
 
         foreach ($groupedBySignature as $signature => $group) {
             $columns = explode('|', $signature);
-            $chunks = array_chunk($group, 20);
+            $chunks = array_chunk($group, $this->batchSize);
 
             foreach ($chunks as $chunk) {
                 $columnNames = implode(', ', array_map([$this, 'escapeIdentifier'], $columns));
