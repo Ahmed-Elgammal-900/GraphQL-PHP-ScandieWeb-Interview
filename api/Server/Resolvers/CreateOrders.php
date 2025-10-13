@@ -258,6 +258,88 @@ class CreateOrders extends OrdersModel
         }
     }
 
+    protected function hasLowColumnVariance(array $items): bool
+    {
+        if (count($items) < 2) {
+            return true;
+        }
+
+        $allColumns = [];
+        $columnCounts = [];
+
+        foreach ($items as $item) {
+            $columns = array_keys($item);
+            $allColumns = array_merge($allColumns, $columns);
+
+            foreach ($columns as $col) {
+                $columnCounts[$col] = ($columnCounts[$col] ?? 0) + 1;
+            }
+        }
+
+        $allColumns = array_unique($allColumns);
+        $totalItems = count($items);
+
+        $avgPresence = 0;
+        foreach ($columnCounts as $count) {
+            $avgPresence += $count / $totalItems;
+        }
+        $avgPresence /= count($allColumns);
+
+        return $avgPresence >= 0.7;
+    }
+
+    protected function batchProcessCategory(string $category, array $items): void
+    {
+        $tableName = $category . "orders";
+
+        if ($this->hasLowColumnVariance($items)) {
+            $this->batchInsertNormalized($tableName, $items);
+        } else {
+            $this->batchInsertBySignature($tableName, $items);
+        }
+    }
+
+    protected function batchInsertBySignature(string $tableName, array $items): void
+    {
+        $groupedBySignature = [];
+        foreach ($items as $item) {
+            $columns = array_keys($item);
+            sort($columns);
+            $signature = implode('|', $columns);
+
+            $groupedBySignature[$signature][] = $item;
+        }
+
+        foreach ($groupedBySignature as $signature => $group) {
+            $columns = explode('|', $signature);
+            $chunks = array_chunk($group, 20);
+
+            foreach ($chunks as $chunk) {
+                $columnNames = implode(', ', array_map([$this, 'escapeIdentifier'], $columns));
+
+                $rowPlaceholder = '(' . implode(', ', array_fill(0, count($columns), '?')) . ')';
+                $allPlaceholders = implode(', ', array_fill(0, count($chunk), $rowPlaceholder));
+
+                $sql = sprintf(
+                    "INSERT INTO %s (%s) VALUES %s",
+                    $this->escapeIdentifier($tableName),
+                    $columnNames,
+                    $allPlaceholders
+                );
+
+                $values = [];
+                foreach ($chunk as $item) {
+                    foreach ($columns as $col) {
+                        $values[] = $item[$col];
+                    }
+                }
+
+                $stmt = $this->connection->prepare($sql);
+                $stmt->execute($values);
+            }
+        }
+    }
+
     public function processOrders(array $order): string
     {
         $this->validateOrderData($order);
@@ -276,7 +358,7 @@ class CreateOrders extends OrdersModel
             $itemsByCategory = $this->groupByCategory($validatedItems);
 
             foreach ($itemsByCategory as $category => $categoryItems) {
-                $this->batchInsertNormalized($category . "orders", $categoryItems);
+                $this->batchProcessCategory($category, $categoryItems);
             }
             $this->connection->commit();
         } catch (\Throwable $th) {
