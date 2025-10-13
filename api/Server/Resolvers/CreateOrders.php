@@ -15,6 +15,7 @@ class CreateOrders extends OrdersModel
 {
     private array $productCache = [];
     private int $batchSize = 20;
+    private float $similarityThreshold = 0.7;
 
     protected function filterOrderKeys(array $orderItem): void
     {
@@ -277,7 +278,7 @@ class CreateOrders extends OrdersModel
 
         $avgPresence = array_sum(array_map(fn($count) => $count / $totalItems, $columnCounts)) / count($columnCounts);
 
-        return $avgPresence >= 0.7;
+        return $avgPresence >= $this->similarityThreshold;
     }
 
     protected function batchProcessCategory(string $category, array $items): void
