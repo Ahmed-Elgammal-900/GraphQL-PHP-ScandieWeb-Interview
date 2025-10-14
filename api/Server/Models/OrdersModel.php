@@ -22,12 +22,7 @@ abstract class OrdersModel
     abstract protected function validateRequiredFields(array $orderItem);
     abstract protected function filterOrderKeys(array $orderItem);
     abstract protected function escapeIdentifier(string $identifier);
-    abstract protected function flattenAssoc(array $orderItem);
-    abstract protected function hasLowColumnVariance(array $items);
-    abstract protected function batchProcessCategory(string $category, array $items);
-    abstract protected function batchInsertBySignature(string $tableName, array $items);
-    abstract protected function groupByCategory(array $items);
-    abstract protected function batchInsertNormalized(string $tableName, array $items);
+    abstract protected function batchInsertNormalized(array $items);
     abstract public function processOrders(array $order);
 
 }

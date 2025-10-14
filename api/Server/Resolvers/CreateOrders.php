@@ -171,17 +171,15 @@ class CreateOrders extends OrdersModel
             }
 
             $cleanData = $orderData;
-            $cleanData['selectedOptions'] = $selectedOptions;
         } else {
             $cleanData = $orderData;
-            unset($cleanData['selectedOptions']);
-            $cleanData['price'] *= $cleanData['count'];
-            return $cleanData;
+            $cleanData['selectedOptions'] = null;
         }
 
         $cleanData['price'] *= $cleanData['count'];
-
-        return $this->flattenAssoc($cleanData);
+        $cleanData['product_id'] = $cleanData['id'];
+        unset($cleanData['id']);
+        return $cleanData;
     }
 
     protected function escapeIdentifier(string $identifier): string
@@ -189,66 +187,19 @@ class CreateOrders extends OrdersModel
         return '`' . str_replace('`', '``', $identifier) . '`';
     }
 
-    protected function flattenAssoc(array $orderItem): array
+    protected function batchInsertNormalized(array $items): void
     {
-        $result = [];
-
-        foreach ($orderItem as $key => $value) {
-            if (is_array($value)) {
-                foreach ($value as $optionKey => $optionValue) {
-                    $result[$optionKey] = $optionValue;
-                }
-            } else {
-                $result[$key] = $value;
-            }
-        }
-
-        return $result;
-    }
-    protected function groupByCategory(array $items): array
-    {
-        $grouped = [];
-
-        foreach ($items as $item) {
-            $category = $item['category'];
-            unset($item['category']);
-
-            $grouped[$category][] = $item;
-        }
-
-        return $grouped;
-    }
-
-    protected function batchInsertNormalized(string $tableName, array $items): void
-    {
-
-        $allColumns = [];
-        foreach ($items as $item) {
-            $allColumns = array_merge($allColumns, array_keys($item));
-        }
-        $allColumns = array_unique($allColumns);
-        sort($allColumns);
-
-        $normalizedItems = [];
-        foreach ($items as $item) {
-            $normalized = [];
-            foreach ($allColumns as $col) {
-                $normalized[$col] = $item[$col] ?? null;
-            }
-            $normalizedItems[] = $normalized;
-        }
-
-        $chunks = array_chunk($normalizedItems, $this->batchSize);
+        $columns = array_keys($items[0]);
+        $chunks = array_chunk($items, $this->batchSize);
 
         foreach ($chunks as $chunk) {
-            $columnNames = implode(', ', array_map([$this, 'escapeIdentifier'], $allColumns));
+            $columnNames = implode(', ', array_map([$this, 'escapeIdentifier'], $columns));
 
-            $rowPlaceholder = '(' . implode(', ', array_fill(0, count($allColumns), '?')) . ')';
+            $rowPlaceholder = '(' . implode(', ', array_fill(0, count($columns), '?')) . ')';
             $allPlaceholders = implode(', ', array_fill(0, count($chunk), $rowPlaceholder));
 
             $sql = sprintf(
-                "INSERT INTO %s (%s) VALUES %s",
-                $this->escapeIdentifier($tableName),
+                "INSERT INTO orders (%s) VALUES %s",
                 $columnNames,
                 $allPlaceholders
             );
@@ -261,79 +212,6 @@ class CreateOrders extends OrdersModel
 
             $stmt = $this->connection->prepare($sql);
             $stmt->execute($values);
-        }
-    }
-
-    protected function hasLowColumnVariance(array $items): bool
-    {
-        $totalItems = count($items);
-
-        if ($totalItems < 2) {
-            return true;
-        }
-
-        $columnCounts = [];
-
-        foreach ($items as $item) {
-            foreach (array_keys($item) as $col) {
-                $columnCounts[$col] = ($columnCounts[$col] ?? 0) + 1;
-            }
-        }
-
-        $avgPresence = array_sum(array_map(fn($count) => $count / $totalItems, $columnCounts)) / count($columnCounts);
-
-        return $avgPresence >= $this->similarityThreshold;
-    }
-
-    protected function batchProcessCategory(string $category, array $items): void
-    {
-        $tableName = $category . "orders";
-
-        if ($this->hasLowColumnVariance($items)) {
-            $this->batchInsertNormalized($tableName, $items);
-        } else {
-            $this->batchInsertBySignature($tableName, $items);
-        }
-    }
-
-    protected function batchInsertBySignature(string $tableName, array $items): void
-    {
-        $groupedBySignature = [];
-        foreach ($items as $item) {
-            $columns = array_keys($item);
-            sort($columns);
-            $signature = implode('|', $columns);
-
-            $groupedBySignature[$signature][] = $item;
-        }
-
-        foreach ($groupedBySignature as $signature => $group) {
-            $columns = explode('|', $signature);
-            $chunks = array_chunk($group, $this->batchSize);
-
-            foreach ($chunks as $chunk) {
-                $columnNames = implode(', ', array_map([$this, 'escapeIdentifier'], $columns));
-
-                $rowPlaceholder = '(' . implode(', ', array_fill(0, count($columns), '?')) . ')';
-                $allPlaceholders = implode(', ', array_fill(0, count($chunk), $rowPlaceholder));
-
-                $sql = sprintf(
-                    "INSERT INTO %s (%s) VALUES %s",
-                    $this->escapeIdentifier($tableName),
-                    $columnNames,
-                    $allPlaceholders
-                );
-
-                $values = [];
-                foreach ($chunk as $item) {
-                    foreach ($columns as $col) {
-                        $values[] = $item[$col];
-                    }
-                }
-
-                $stmt = $this->connection->prepare($sql);
-                $stmt->execute($values);
-            }
         }
     }
 
@@ -351,12 +229,7 @@ class CreateOrders extends OrdersModel
                 $this->filterOrderKeys($orderItem);
                 $validatedItems[] = $this->validateRequiredFields($orderItem);
             }
-
-            $itemsByCategory = $this->groupByCategory($validatedItems);
-
-            foreach ($itemsByCategory as $category => $categoryItems) {
-                $this->batchProcessCategory($category, $categoryItems);
-            }
+            $this->batchInsertNormalized($validatedItems);
             $this->connection->commit();
         } catch (\Throwable $th) {
             $this->connection->rollBack();
