@@ -15,7 +15,6 @@ class CreateOrders extends OrdersModel
 {
     private array $productCache = [];
     private int $batchSize = 20;
-    private float $similarityThreshold = 0.7;
 
     protected function filterOrderKeys(array $orderItem): void
     {
@@ -132,44 +131,7 @@ class CreateOrders extends OrdersModel
         }
 
         if (!empty($productData['attributes'])) {
-            if (!isset($orderData['selectedOptions'])) {
-                throw new InvalidArgumentException("Selected options required for product: {$orderData['id']}");
-            }
-
-            $selectedOptions = $orderData['selectedOptions'];
-
-            if (is_string($selectedOptions)) {
-                $selectedOptions = json_decode($orderData['selectedOptions'], true);
-
-                if (json_last_error() !== JSON_ERROR_NONE) {
-                    throw new InvalidArgumentException("Invalid JSON in selectedOptions: " . json_last_error_msg());
-                }
-            }
-
-
-            if (!is_array($selectedOptions)) {
-                throw new InvalidArgumentException("selectedOptions must be an array");
-            }
-
-            foreach ($productData['attributes'] as $requiredType => $validValues) {
-                if (!isset($selectedOptions[$requiredType])) {
-                    throw new InvalidArgumentException("Missing required attribute: {$requiredType}");
-                }
-            }
-
-            foreach ($selectedOptions as $attributeType => $selectedValue) {
-                if (!array_key_exists($attributeType, $productData['attributes'])) {
-                    throw new InvalidArgumentException("Invalid attribute type '{$attributeType}' for product: {$orderData['id']}");
-                }
-
-                $validValues = $productData['attributes'][$attributeType];
-                if (!in_array($selectedValue, $validValues, true)) {
-                    throw new DomainException(
-                        "Invalid value '{$selectedValue}' for attribute '{$attributeType}'."
-                    );
-                }
-            }
-
+            $this->validateProductAttributes($orderData, $productData);
             $cleanData = $orderData;
         } else {
             $cleanData = $orderData;
@@ -180,6 +142,48 @@ class CreateOrders extends OrdersModel
         $cleanData['product_id'] = $cleanData['id'];
         unset($cleanData['id']);
         return $cleanData;
+    }
+
+    protected function validateProductAttributes(array $orderData, array $productData): void
+    {
+        if (!isset($orderData['selectedOptions'])) {
+            throw new InvalidArgumentException("Selected options required for product: {$orderData['id']}");
+        }
+
+        $selectedOptions = $orderData['selectedOptions'];
+
+        if (is_string($selectedOptions)) {
+            $selectedOptions = json_decode($selectedOptions, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new InvalidArgumentException("Invalid JSON in selectedOptions: " . json_last_error_msg());
+            }
+        }
+
+        if (!is_array($selectedOptions)) {
+            throw new InvalidArgumentException("selectedOptions must be an array");
+        }
+
+        foreach ($productData['attributes'] as $requiredType => $validValues) {
+            if (!isset($selectedOptions[$requiredType])) {
+                throw new InvalidArgumentException("Missing required attribute: {$requiredType}");
+            }
+        }
+
+        foreach ($selectedOptions as $attributeType => $selectedValue) {
+            if (!array_key_exists($attributeType, $productData['attributes'])) {
+                throw new InvalidArgumentException(
+                    "Invalid attribute type '{$attributeType}' for product: {$orderData['id']}"
+                );
+            }
+
+            $validValues = $productData['attributes'][$attributeType];
+            if (!in_array($selectedValue, $validValues, true)) {
+                throw new DomainException(
+                    "Invalid value '{$selectedValue}' for attribute '{$attributeType}'. " .
+                    "Valid values: " . implode(', ', $validValues)
+                );
+            }
+        }
     }
 
     protected function escapeIdentifier(string $identifier): string
