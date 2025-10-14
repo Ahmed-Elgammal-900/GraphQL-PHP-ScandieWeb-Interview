@@ -35,6 +35,10 @@ class CreateOrders extends OrdersModel
         if (empty($orderData['items'])) {
             throw new InvalidArgumentException('No order items provided');
         }
+
+        if (count($orderData['items']) > 100) {
+            throw new RuntimeException("Items count exceeded");
+        }
     }
 
     protected function getProductData(string $productId): array
