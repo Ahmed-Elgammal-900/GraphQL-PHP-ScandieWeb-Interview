@@ -24,4 +24,5 @@ abstract class OrdersModel
     abstract protected function validateProductAttributes(array $orderData, array $productData);
     abstract protected function escapeIdentifier(string $identifier);
     abstract protected function batchInsertNormalized(array $items);
+    abstract public function processOrders(array $order);
 }
