@@ -101,45 +101,45 @@ class CreateOrders extends OrdersModel
         }
     }
 
-    protected function validateRequiredFields(array $orderData): array
+    protected function validateRequiredFields(array $orderItem): array
     {
-        if (!isset($orderData['count']) || !is_int($orderData['count']) || $orderData['count'] <= 0) {
+        if (!isset($orderItem['count']) || !is_int($orderItem['count']) || $orderItem['count'] <= 0) {
             throw new InvalidArgumentException("Invalid count");
         }
 
 
-        if (!isset($orderData['price']) || !is_float($orderData['price']) || $orderData['price'] <= 0) {
+        if (!isset($orderItem['price']) || !is_float($orderItem['price']) || $orderItem['price'] <= 0) {
             throw new InvalidArgumentException("Invalid price");
         }
 
 
-        if (!isset($orderData['category']) || !is_string($orderData['category']) || empty(trim($orderData['category']))) {
+        if (!isset($orderItem['category']) || !is_string($orderItem['category']) || empty(trim($orderItem['category']))) {
             throw new InvalidArgumentException("Invalid product category");
         }
 
-        $productData = $this->productsCache[$orderData['id']];
+        $productData = $this->productsCache[$orderItem['id']];
 
         if ($productData['instock'] !== "true") {
-            throw new DomainException("Product not available: {$orderData['id']}");
+            throw new DomainException("Product not available: {$orderItem['id']}");
         }
 
-        if ($orderData['price'] !== $productData['price'] || $orderData['label'] !== $productData['label']) {
+        if ($orderItem['price'] !== $productData['price'] || $orderItem['label'] !== $productData['label']) {
             throw new DomainException(
                 "Incorrect price"
             );
         }
 
-        if ($productData['category'] !== $orderData['category']) {
+        if ($productData['category'] !== $orderItem['category']) {
             throw new DomainException(
-                "Invalid category. Expected: {$productData['category']}, provided: {$orderData['category']}"
+                "Invalid category. Expected: {$productData['category']}, provided: {$orderItem['category']}"
             );
         }
 
         if (!empty($productData['attributes'])) {
-            $this->validateProductAttributes($orderData, $productData);
-            $cleanData = $orderData;
+            $this->validateProductAttributes($orderItem, $productData);
+            $cleanData = $orderItem;
         } else {
-            $cleanData = $orderData;
+            $cleanData = $orderItem;
             $cleanData['selectedOptions'] = null;
         }
 
@@ -149,13 +149,13 @@ class CreateOrders extends OrdersModel
         return $cleanData;
     }
 
-    protected function validateProductAttributes(array $orderData, array $productData): void
+    protected function validateProductAttributes(array $orderItem, array $productData): void
     {
-        if (!isset($orderData['selectedOptions'])) {
-            throw new InvalidArgumentException("Selected options required for product: {$orderData['id']}");
+        if (!isset($orderItem['selectedOptions'])) {
+            throw new InvalidArgumentException("Selected options required for product: {$orderItem['id']}");
         }
 
-        $selectedOptions = $orderData['selectedOptions'];
+        $selectedOptions = $orderItem['selectedOptions'];
 
         if (is_string($selectedOptions)) {
             $selectedOptions = json_decode($selectedOptions, true);
@@ -177,7 +177,7 @@ class CreateOrders extends OrdersModel
         foreach ($selectedOptions as $attributeType => $selectedValue) {
             if (!array_key_exists($attributeType, $productData['attributes'])) {
                 throw new InvalidArgumentException(
-                    "Invalid attribute type '{$attributeType}' for product: {$orderData['id']}"
+                    "Invalid attribute type '{$attributeType}' for product: {$orderItem['id']}"
                 );
             }
 
