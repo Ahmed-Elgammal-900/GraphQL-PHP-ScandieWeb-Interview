@@ -230,7 +230,7 @@ class CreateOrders extends OrdersModel
             $this->filterOrderKeys($orderItem);
             $validatedItems[] = $this->validateRequiredFields($orderItem);
         }
-        
+
         $this->connection->beginTransaction();
         try {
             $this->batchInsertNormalized($validatedItems);
