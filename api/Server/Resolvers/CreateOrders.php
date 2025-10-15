@@ -44,6 +44,10 @@ class CreateOrders extends OrdersModel
     {
         $productIds = array_column($orderData['items'], 'id');
 
+        if (empty($productIds)) {
+            throw new RuntimeException("No product IDs founds in order data");
+        }
+
         if (count($orderData['items']) !== count($productIds)) {
             throw new RuntimeException("some orders don't have IDs");
         }
