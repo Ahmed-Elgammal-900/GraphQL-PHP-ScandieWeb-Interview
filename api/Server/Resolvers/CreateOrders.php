@@ -241,6 +241,6 @@ class CreateOrders extends OrdersModel
 
         }
 
-        return 'Your Orders Have been received';
+        return 'Your Order Have been received';
     }
 }
