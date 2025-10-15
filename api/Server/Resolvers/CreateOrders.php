@@ -224,15 +224,15 @@ class CreateOrders extends OrdersModel
         $this->validateOrderData($order);
         $orderID = 'ORD-' . strtoupper(bin2hex(random_bytes(16)));
 
+        $validatedItems = [];
+        foreach ($order['items'] as $orderItem) {
+            $orderItem['orderID'] = $orderID;
+            $this->filterOrderKeys($orderItem);
+            $validatedItems[] = $this->validateRequiredFields($orderItem);
+        }
+        
         $this->connection->beginTransaction();
-
         try {
-            $validatedItems = [];
-            foreach ($order['items'] as $orderItem) {
-                $orderItem['orderID'] = $orderID;
-                $this->filterOrderKeys($orderItem);
-                $validatedItems[] = $this->validateRequiredFields($orderItem);
-            }
             $this->batchInsertNormalized($validatedItems);
             $this->connection->commit();
         } catch (\Throwable $th) {
