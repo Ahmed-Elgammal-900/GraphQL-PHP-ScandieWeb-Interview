@@ -40,53 +40,63 @@ class CreateOrders extends OrdersModel
         }
     }
 
-    protected function getProductData(string $productId): array
+    protected function getProductsData(array $orderData): void
     {
-        if (isset($this->productCache[$productId])) {
-            return $this->productCache[$productId];
+        $productIds = array_column($orderData['items'], 'id');
+        if (count($orderData['items']) !== count($productIds)) {
+            throw new RuntimeException("some orders don't have IDs");
         }
-
+        $uniqueIds = array_unique($productIds);
         try {
-            $sql1 = "SELECT instock, amount as price, label, category FROM products WHERE id = :id";
+            $placeholders = implode(',', array_fill(0, count($uniqueIds), '?'));
+
+            $sql1 = "SELECT id, instock, amount as price, label, category FROM products WHERE id IN ({$placeholders})";
 
             $stmt1 = $this->connection->prepare($sql1);
-            $stmt1->bindValue(":id", $productId, PDO::PARAM_STR);
-            $stmt1->execute();
-            $basicData = $stmt1->fetch(PDO::FETCH_ASSOC);
+            $stmt1->execute(array_values($uniqueIds));
+            $products = $stmt1->fetchAll(PDO::FETCH_ASSOC);
 
-            if (!$basicData) {
-                throw new RuntimeException("Product Not found");
+            if (count($products) !== count($uniqueIds)) {
+                $foundIds = array_column($products, 'id');
+                $notFound = array_diff($uniqueIds, $foundIds);
+                throw new RuntimeException("Products not found: " . implode(', ', $notFound));
             }
 
-            $sql2 = "SELECT type, GROUP_CONCAT(`value`) as attribute_values FROM productsattr WHERE productid = :id GROUP BY `type`";
+            foreach ($products as $product) {
+                $this->productCache[$product['id']] = [
+                    'instock' => $product['instock'],
+                    'price' => $product['price'],
+                    'label' => $product['label'],
+                    'category' => $product['category'],
+                    'attributes' => []
+                ];
+            }
+
+            $sql2 = "SELECT productid, type, GROUP_CONCAT(`value`) as attribute_values FROM productsattr 
+            WHERE productid IN ({$placeholders}) GROUP BY productid, type";
 
             $stmt2 = $this->connection->prepare($sql2);
-            $stmt2->bindValue(":id", $productId, PDO::PARAM_STR);
-            $stmt2->execute();
+            $stmt2->execute(array_values($uniqueIds));
             $attributeRows = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($attributeRows as $row) {
+                $productId = $row['productid'];
+                $values = explode(',', $row['attribute_values']);
+                $this->productCache[$productId]['attributes'][$row['type']] = $values;
+            }
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
 
         }
+    }
 
-        $attributes = [];
-
-        foreach ($attributeRows as $row) {
-            $values = explode(',', $row['attribute_values']);
-            $attributes[$row['type']] = $values;
+    protected function getProductData(string $productId): array
+    {
+        if (!isset($this->productCache[$productId])) {
+            throw new RuntimeException("Product data not loaded: {$productId}");
         }
 
-        $productData = [
-            'instock' => $basicData['instock'],
-            'price' => (float) $basicData['price'],
-            'label' => $basicData['label'],
-            'category' => $basicData['category'],
-            'attributes' => $attributes
-        ];
-
-        $this->productCache[$productId] = $productData;
-        return $productData;
-
+        return $this->productCache[$productId];
     }
 
     protected function validateRequiredFields(array $orderData): array
@@ -112,7 +122,6 @@ class CreateOrders extends OrdersModel
         }
 
         $productData = $this->getProductData($orderData['id']);
-
 
         if ($productData['instock'] !== "true") {
             throw new DomainException("Product not available: {$orderData['id']}");
@@ -223,6 +232,7 @@ class CreateOrders extends OrdersModel
     {
         $this->validateOrderData($order);
         $orderID = 'ORD-' . strtoupper(bin2hex(random_bytes(16)));
+        $this->getProductsData($order);
 
         $validatedItems = [];
         foreach ($order['items'] as $orderItem) {
