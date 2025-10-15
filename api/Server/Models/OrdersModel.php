@@ -17,10 +17,10 @@ abstract class OrdersModel
         $this->connection = $this->database->getConnection();
     }
 
+    abstract protected function filterOrderKeys(array $orderItem);
     abstract protected function validateOrderData(array $orderData);
     abstract protected function getProductsData(array $orderData);
     abstract protected function validateRequiredFields(array $orderItem);
-    abstract protected function filterOrderKeys(array $orderItem);
     abstract protected function validateProductAttributes(array $orderData, array $productData);
     abstract protected function escapeIdentifier(string $identifier);
     abstract protected function batchInsertNormalized(array $items);
