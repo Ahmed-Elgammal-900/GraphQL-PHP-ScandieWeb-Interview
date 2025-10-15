@@ -92,7 +92,7 @@ class CreateOrders extends OrdersModel
 
     protected function getProductData(string $productId): array
     {
-        if (!isset($this->productCache[$productId])) {
+        if (!isset($this->productsCache[$productId])) {
             throw new RuntimeException("Product data not loaded: {$productId}");
         }
 
