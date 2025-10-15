@@ -43,8 +43,15 @@ class CreateOrders extends OrdersModel
     protected function getProductsData(array $orderData): void
     {
         $productIds = array_column($orderData['items'], 'id');
+
         if (count($orderData['items']) !== count($productIds)) {
             throw new RuntimeException("some orders don't have IDs");
+        }
+
+        foreach ($productIds as $id) {
+            if (!isset($id) || !is_string($id) || empty(trim($id))) {
+                throw new InvalidArgumentException("Invalid Product id");
+            }
         }
         $uniqueIds = array_unique($productIds);
         try {
@@ -101,12 +108,6 @@ class CreateOrders extends OrdersModel
 
     protected function validateRequiredFields(array $orderData): array
     {
-
-        if (!isset($orderData['id']) || !is_string($orderData['id']) || empty(trim($orderData['id']))) {
-            throw new InvalidArgumentException("Invalid Product id");
-        }
-
-
         if (!isset($orderData['count']) || !is_int($orderData['count']) || $orderData['count'] <= 0) {
             throw new InvalidArgumentException("Invalid count");
         }
