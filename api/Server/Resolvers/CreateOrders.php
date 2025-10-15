@@ -13,7 +13,7 @@ use RuntimeException;
 
 class CreateOrders extends OrdersModel
 {
-    private array $productCache = [];
+    private array $productsCache = [];
     private int $batchSize = 20;
 
     protected function filterOrderKeys(array $orderItem): void
@@ -63,7 +63,7 @@ class CreateOrders extends OrdersModel
             }
 
             foreach ($products as $product) {
-                $this->productCache[$product['id']] = [
+                $this->productsCache[$product['id']] = [
                     'instock' => $product['instock'],
                     'price' => $product['price'],
                     'label' => $product['label'],
@@ -82,7 +82,7 @@ class CreateOrders extends OrdersModel
             foreach ($attributeRows as $row) {
                 $productId = $row['productid'];
                 $values = explode(',', $row['attribute_values']);
-                $this->productCache[$productId]['attributes'][$row['type']] = $values;
+                $this->productsCache[$productId]['attributes'][$row['type']] = $values;
             }
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
@@ -96,7 +96,7 @@ class CreateOrders extends OrdersModel
             throw new RuntimeException("Product data not loaded: {$productId}");
         }
 
-        return $this->productCache[$productId];
+        return $this->productsCache[$productId];
     }
 
     protected function validateRequiredFields(array $orderData): array
