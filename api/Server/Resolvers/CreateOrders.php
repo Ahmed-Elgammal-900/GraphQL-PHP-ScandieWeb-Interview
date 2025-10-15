@@ -101,15 +101,6 @@ class CreateOrders extends OrdersModel
         }
     }
 
-    protected function getProductData(string $productId): array
-    {
-        if (!isset($this->productsCache[$productId])) {
-            throw new RuntimeException("Product data not loaded: {$productId}");
-        }
-
-        return $this->productsCache[$productId];
-    }
-
     protected function validateRequiredFields(array $orderData): array
     {
         if (!isset($orderData['count']) || !is_int($orderData['count']) || $orderData['count'] <= 0) {
@@ -126,7 +117,7 @@ class CreateOrders extends OrdersModel
             throw new InvalidArgumentException("Invalid product category");
         }
 
-        $productData = $this->getProductData($orderData['id']);
+        $productData = $this->productsCache[$orderData['id']];
 
         if ($productData['instock'] !== "true") {
             throw new DomainException("Product not available: {$orderData['id']}");
