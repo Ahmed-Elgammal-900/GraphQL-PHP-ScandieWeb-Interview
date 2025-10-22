@@ -26,10 +26,12 @@ abstract class OrdersModel
             }
         }
     }
+
     protected function escapeIdentifier(string $identifier): string
     {
         return '`' . str_replace('`', '``', $identifier) . '`';
     }
+
     abstract protected function validateOrderData(array $orderData);
     abstract protected function getProductsData(array $orderData);
     abstract protected function validateRequiredFields(array $orderItem);
