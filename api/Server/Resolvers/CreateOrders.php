@@ -16,15 +16,6 @@ class CreateOrders extends OrdersModel
     private array $productsCache = [];
     private int $batchSize = 20;
 
-    protected function filterOrderKeys(array $orderItem): void
-    {
-        foreach ($orderItem as $key => $value) {
-            if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $key)) {
-                throw new InvalidArgumentException("Invalid field name: {$key}");
-            }
-        }
-    }
-
     protected function validateOrderData(array $orderData): void
     {
         if (!isset($orderData['items']) || !is_array($orderData['items'])) {
@@ -189,11 +180,6 @@ class CreateOrders extends OrdersModel
                 );
             }
         }
-    }
-
-    protected function escapeIdentifier(string $identifier): string
-    {
-        return '`' . str_replace('`', '``', $identifier) . '`';
     }
 
     protected function batchInsertNormalized(array $items): void
