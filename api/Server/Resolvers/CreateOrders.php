@@ -40,7 +40,7 @@ class CreateOrders extends OrdersModel
         }
 
         if (count($orderData['items']) !== count($productIds)) {
-            throw new RuntimeException("some items don't have IDs");
+            throw new RuntimeException("some items don't have ID");
         }
 
         foreach ($productIds as $id) {
