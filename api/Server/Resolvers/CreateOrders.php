@@ -14,7 +14,8 @@ use RuntimeException;
 class CreateOrders extends OrdersModel
 {
     private array $productsCache = [];
-    private int $batchSize = 20;
+    private const int DEFAULT_BATCH_SIZE = 20;
+    private const int MAX_ITEMS_COUNT = 100;
 
     protected function validateOrderData(array $orderData): void
     {
@@ -26,8 +27,8 @@ class CreateOrders extends OrdersModel
             throw new InvalidArgumentException('No order items provided');
         }
 
-        if (count($orderData['items']) > 100) {
-            throw new RuntimeException("Items count exceeded");
+        if (count($orderData['items']) > self::MAX_ITEMS_COUNT) {
+            throw new InvalidArgumentException("Items count exceed");
         }
     }
 
@@ -200,7 +201,7 @@ class CreateOrders extends OrdersModel
     protected function batchInsertNormalized(array $items): void
     {
         $columns = array_keys($items[0]);
-        $chunks = array_chunk($items, $this->batchSize);
+        $chunks = array_chunk($items, self::DEFAULT_BATCH_SIZE);
 
         $columnNames = implode(', ', array_map([$this, 'escapeIdentifier'], $columns));
         $rowPlaceholder = '(' . implode(', ', array_fill(0, count($columns), '?')) . ')';
