@@ -32,7 +32,7 @@ abstract class OrdersModel
         return '`' . str_replace('`', '``', $identifier) . '`';
     }
 
-    abstract protected function checkColumnsCount(array $items);
+    abstract protected function checkItemStructure(array $items);
     abstract protected function validateOrderData(array $orderData);
     abstract protected function getProductsData(array $orderData);
     abstract protected function validateRequiredFields(array $orderItem);

@@ -32,7 +32,7 @@ class CreateOrders extends OrdersModel
         }
     }
 
-    protected function checkColumnsCount(array $items): void
+    protected function checkItemStructure(array $items): void
     {
         $firstItem = $items[0];
 
@@ -227,7 +227,7 @@ class CreateOrders extends OrdersModel
     public function processOrder(array $order): string
     {
         $this->validateOrderData($order);
-        $this->checkColumnsCount($order['items']);
+        $this->checkItemStructure($order['items']);
         $orderID = 'ORD-' . strtoupper(bin2hex(random_bytes(16)));
         $this->getProductsData($order);
 
