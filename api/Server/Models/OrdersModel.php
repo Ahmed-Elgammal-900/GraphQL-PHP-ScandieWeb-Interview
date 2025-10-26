@@ -18,15 +18,6 @@ abstract class OrdersModel
         $this->connection = $this->database->getConnection();
     }
 
-    protected function filterOrderKeys(array $orderItem): void
-    {
-        foreach ($orderItem as $key => $value) {
-            if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $key)) {
-                throw new InvalidArgumentException("Invalid field name: {$key}");
-            }
-        }
-    }
-
     protected function escapeIdentifier(string $identifier): string
     {
         return '`' . str_replace('`', '``', $identifier) . '`';

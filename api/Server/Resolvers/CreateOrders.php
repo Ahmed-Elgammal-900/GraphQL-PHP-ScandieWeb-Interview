@@ -14,6 +14,7 @@ use RuntimeException;
 class CreateOrders extends OrdersModel
 {
     private array $productsCache = [];
+    private const array REQUIRED_FIELDS = ["id", "count", "category", "price", "label", "selectedOptions"];
     private const int DEFAULT_BATCH_SIZE = 20;
     private const int MAX_ITEMS_COUNT = 100;
 
@@ -34,12 +35,9 @@ class CreateOrders extends OrdersModel
 
     protected function checkItemStructure(array $items): void
     {
-        $firstItem = $items[0];
-
         foreach ($items as $item) {
-
-            $missing = array_diff_key($firstItem, $item);
-            $extra = array_diff_key($item, $firstItem);
+            $missing = array_diff(self::REQUIRED_FIELDS, array_keys($item));
+            $extra = array_diff(array_keys($item), self::REQUIRED_FIELDS);
 
             if ($missing || $extra) {
                 throw new InvalidArgumentException(
@@ -238,7 +236,6 @@ class CreateOrders extends OrdersModel
         $validatedItems = [];
         foreach ($order['items'] as $orderItem) {
             $orderItem['orderID'] = $orderID;
-            $this->filterOrderKeys($orderItem);
             $validatedItems[] = $this->validateRequiredFields($orderItem);
         }
 
