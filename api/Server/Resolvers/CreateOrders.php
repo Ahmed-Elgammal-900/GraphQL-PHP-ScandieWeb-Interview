@@ -170,7 +170,11 @@ class CreateOrders extends OrdersModel
         }
 
         if (!is_array($selectedOptions)) {
-            throw new InvalidArgumentException("selectedOptions must be an array");
+            throw new InvalidArgumentException("selected options must be an array");
+        }
+
+        if (empty($selectedOptions)) {
+            throw new InvalidArgumentException("selected options is empty");
         }
 
         foreach ($productData['attributes'] as $requiredType => $validValues) {
