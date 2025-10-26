@@ -213,6 +213,7 @@ class CreateOrders extends OrdersModel
     public function processOrder(array $order): string
     {
         $this->validateOrderData($order);
+        $this->checkColumnsCount($order['items']);
         $orderID = 'ORD-' . strtoupper(bin2hex(random_bytes(16)));
         $this->getProductsData($order);
 
