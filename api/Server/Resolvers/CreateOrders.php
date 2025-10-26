@@ -31,16 +31,31 @@ class CreateOrders extends OrdersModel
         }
     }
 
+    protected function checkColumnsCount(array $items): void
+    {
+        $firstItem = $items[0];
+
+        foreach ($items as $item) {
+
+            $missing = array_diff_key($firstItem, $item);
+            $extra = array_diff_key($item, $firstItem);
+
+            if ($missing || $extra) {
+                throw new InvalidArgumentException(
+                    "Item has mismatched keys. " .
+                    ($missing ? "Missing: " . implode(', ', array_keys($missing)) . ". " : "") .
+                    ($extra ? "Extra: " . implode(', ', array_keys($extra)) : "")
+                );
+            }
+        }
+    }
+
     protected function getProductsData(array $orderData): void
     {
         $productIds = array_column($orderData['items'], 'id');
 
         if (empty($productIds)) {
             throw new RuntimeException("No product IDs founds in order data");
-        }
-
-        if (count($orderData['items']) !== count($productIds)) {
-            throw new RuntimeException("some items don't have ID");
         }
 
         foreach ($productIds as $id) {
@@ -187,10 +202,10 @@ class CreateOrders extends OrdersModel
         $columns = array_keys($items[0]);
         $chunks = array_chunk($items, $this->batchSize);
 
-        foreach ($chunks as $chunk) {
-            $columnNames = implode(', ', array_map([$this, 'escapeIdentifier'], $columns));
+        $columnNames = implode(', ', array_map([$this, 'escapeIdentifier'], $columns));
+        $rowPlaceholder = '(' . implode(', ', array_fill(0, count($columns), '?')) . ')';
 
-            $rowPlaceholder = '(' . implode(', ', array_fill(0, count($columns), '?')) . ')';
+        foreach ($chunks as $chunk) {
             $allPlaceholders = implode(', ', array_fill(0, count($chunk), $rowPlaceholder));
 
             $sql = sprintf(
