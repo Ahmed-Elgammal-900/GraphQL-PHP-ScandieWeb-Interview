@@ -53,10 +53,6 @@ class CreateOrders extends OrdersModel
     {
         $productIds = array_column($orderData['items'], 'id');
 
-        if (empty($productIds)) {
-            throw new RuntimeException("No product IDs founds in order data");
-        }
-
         foreach ($productIds as $id) {
             if (!isset($id) || !is_string($id) || empty(trim($id))) {
                 throw new InvalidArgumentException("Invalid Product id");
