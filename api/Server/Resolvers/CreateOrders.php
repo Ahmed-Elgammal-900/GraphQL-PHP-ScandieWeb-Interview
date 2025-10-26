@@ -141,12 +141,10 @@ class CreateOrders extends OrdersModel
                 "Invalid category. Expected: {$productData['category']}, provided: {$orderItem['category']}"
             );
         }
-
+        $cleanData = $orderItem;
         if (!empty($productData['attributes'])) {
             $this->validateProductAttributes($orderItem, $productData);
-            $cleanData = $orderItem;
         } else {
-            $cleanData = $orderItem;
             $cleanData['selectedOptions'] = null;
         }
 
