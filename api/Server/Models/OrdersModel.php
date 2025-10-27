@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Api\Server\Models;
 
 use Api\Server\Config\Database;
-use InvalidArgumentException;
 
 abstract class OrdersModel
 {
