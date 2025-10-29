@@ -13,9 +13,9 @@ use RuntimeException;
 
 class CreateOrders extends OrdersModel
 {
-    private const array REQUIRED_FIELDS = ["id", "count", "category", "price", "label", "selectedOptions"];
-    private const int DEFAULT_BATCH_SIZE = 20;
-    private const int MAX_ITEMS_COUNT = 100;
+    private const REQUIRED_FIELDS = ["id", "count", "category", "price", "label", "selectedOptions"];
+    private const DEFAULT_BATCH_SIZE = 20;
+    private const MAX_ITEMS_COUNT = 100;
     private array $productsCache = [];
 
     protected function validateOrderData(array $orderData): void
