@@ -1,2 +1,2 @@
-# GraphQL-PHP-ScandieWeb-Interview
+# GraphQL-PHP-ScandieWeb-Test
 GraphQL API
